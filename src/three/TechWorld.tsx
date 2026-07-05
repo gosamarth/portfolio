@@ -1,7 +1,7 @@
 import { Image as DreiImage, MeshReflectorMaterial, Float } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { scrollState } from '../scrollBridge'
 import { TECH_PAGES, irl, techHero } from '../data/tech'
@@ -175,6 +175,11 @@ function TechFloor() {
 export function TechWorld() {
   const { camera } = useThree()
   const target = useRef(new THREE.Vector3())
+
+  // snap to the start of the journey on world entry
+  useEffect(() => {
+    camera.position.set(0, 0.4, 8)
+  }, [camera])
 
   useFrame((state, delta) => {
     const o = scrollState.offset

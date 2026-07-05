@@ -54,14 +54,15 @@ export default function App() {
 
   return (
     <div className="fixed inset-0">
-      {inWorld && (
-        <Canvas key={mode} camera={{ position: [0, 0.4, 8], fov: 55 }} dpr={[1, 1.75]} gl={{ antialias: true }}>
-          <Suspense fallback={null}>
-            {mode === 'garage' ? <Experience /> : <TechWorld />}
-            <Preload all />
-          </Suspense>
-        </Canvas>
-      )}
+      {/* One persistent Canvas — scenes swap inside it (unmounting whole
+          Canvases leaks stacked WebGL contexts during world switches). */}
+      <Canvas camera={{ position: [0, 0.4, 8], fov: 55 }} dpr={[1, 1.75]} gl={{ antialias: true }}>
+        <Suspense fallback={null}>
+          {mode === 'garage' && <Experience />}
+          {mode === 'tech' && <TechWorld />}
+          <Preload all />
+        </Suspense>
+      </Canvas>
 
       {/* Native scroll surface — owns the wheel/touch. */}
       {inWorld && (
