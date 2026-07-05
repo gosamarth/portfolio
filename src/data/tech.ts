@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────────────────────────
 
 export const techHero = {
-  title: 'Command Deck',
+  title: 'Samarth Builds.',
   subtitle: 'Director of Engineering · AI Solutions Architect',
   portrait: '/me/portrait.jpg',
   tickerSuffix: ['of building.', 'And still counting.'],

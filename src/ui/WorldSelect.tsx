@@ -117,7 +117,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
           onMouseEnter={() => setHover('tech')}
           onMouseLeave={() => setHover(null)}
           onClick={() => enter('tech')}
-          aria-label="Enter The Command Deck"
+          aria-label="Enter the portfolio — Samarth Builds"
         >
           <div className="absolute inset-0 bg-[#f3f1ec]" />
           <div
@@ -152,15 +152,15 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
           </span>
 
           <div className="relative flex h-full flex-col items-start justify-end p-5 md:p-9">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-black/50">
-              {profile.name} — {profile.role}
-            </p>
-            <h2 className="mt-1 font-display text-4xl font-bold text-[#121317] md:text-6xl">
-              The Command Deck
+            <h2 className="font-display text-4xl font-bold text-[#121317] md:text-6xl">
+              Samarth <span className="text-black/40">Builds.</span>
             </h2>
+            <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.25em] text-emerald-800/80">
+              {profile.role} · AI Solutions Architect
+            </p>
             <p className="mt-2 max-w-md text-sm text-black/60 md:text-base">
-              My professional world — a decade of engineering leadership, AI systems that survive
-              production, and the business results behind them.
+              The pitch, in person — a decade of engineering leadership, AI systems that survive
+              production, and the business results to prove it.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {['The AI story', 'The climb: SDE → Director', 'Results & receipts', 'Work with me'].map((c) => (
@@ -179,7 +179,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
                   : 'border-emerald-700/70 text-emerald-700'
               }`}
             >
-              Enter the deck →
+              Enter the portfolio →
               <kbd className="rounded border border-current px-1.5 py-0.5 font-mono text-[10px]">T</kbd>
             </span>
           </div>
