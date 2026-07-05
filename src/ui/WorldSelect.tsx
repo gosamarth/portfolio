@@ -6,9 +6,10 @@ import { ExperienceTicker } from './ExperienceTicker'
 import type { WorldMode } from '../world'
 
 // ─────────────────────────────────────────────────────────────
-//  THE SPLIT — half dark, half light. Two worlds leaking their
-//  atmosphere through one seam. Hover swells a side; choosing
-//  sweeps it across the screen.
+//  THE SPLIT v2 — two unmistakable doors. A title strip on top,
+//  then two giant framed panels with a real gutter between them
+//  and a big ENTER button in each. Hover still swells a side;
+//  the garage door still plays the turntable.
 // ─────────────────────────────────────────────────────────────
 
 type Side = 'garage' | 'tech' | null
@@ -22,7 +23,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
   const grow = (side: Exclude<Side, null>) => {
     if (leaving) return leaving === side ? 30 : 0.0001
     if (!hover) return 1
-    return hover === side ? 1.7 : 1
+    return hover === side ? 1.55 : 1
   }
 
   const enter = (side: Exclude<Side, null>) => {
@@ -32,163 +33,174 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
   }
 
   return (
-    <div className="fixed inset-0 z-30 flex flex-col overflow-hidden md:flex-row">
-      {/* ── DARK HALF · THE GARAGE ─────────────────────────── */}
-      <motion.button
-        animate={{ flexGrow: grow('garage') }}
-        transition={{ type: 'spring', stiffness: 160, damping: 26 }}
-        style={{ flexBasis: 0, flexGrow: 1 }}
-        className="group relative min-h-0 overflow-hidden text-left"
-        onMouseEnter={() => {
-          setHover('garage')
-          setVideoOn(true)
-          videoRef.current?.play().catch(() => {})
-        }}
-        onMouseLeave={() => setHover(null)}
-        onClick={() => enter('garage')}
-        aria-label="Enter The Garage"
-      >
-        <div className="absolute inset-0 bg-[#05060a]" />
-        {/* still render → video leak on hover */}
-        <img
-          src="/cars/2026-mercedes-c300.jpg"
-          alt=""
-          className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${
-            hover === 'garage' ? 'opacity-80 scale-105' : 'opacity-55'
-          }`}
-        />
-        {videoOn && (
-          <video
-            ref={videoRef}
-            src="/cars/2026-mercedes-c300.mp4"
-            muted
-            loop
-            playsInline
-            autoPlay
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-              hover === 'garage' || leaving === 'garage' ? 'opacity-90' : 'opacity-0'
-            }`}
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/30" />
-        {/* neon leak on the seam edge */}
-        <div
-          className={`absolute bottom-0 right-0 top-0 hidden w-1 transition-opacity duration-500 md:block ${
-            hover === 'garage' ? 'opacity-100' : 'opacity-50'
-          }`}
-          style={{ background: 'linear-gradient(180deg, #6ee7ff, #f0abfc)', boxShadow: '0 0 24px rgba(110,231,255,0.6)' }}
-        />
-        <div className="relative flex h-full flex-col justify-end p-6 md:p-10">
-          <span className="mb-2 w-fit rounded border border-accent/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.3em] text-accent">
-            Gearhead mode
-          </span>
-          <h2 className="font-display text-4xl font-bold text-white md:text-6xl">The Garage</h2>
-          <p className={`mt-2 max-w-xs text-sm text-white/65 transition-all duration-500 md:text-base ${
-            hover === 'garage' ? 'translate-y-0 opacity-100' : 'md:translate-y-2 md:opacity-0'
-          }`}>
-            Eight machines. Neon, turntables, and the story of every set of keys.
-          </p>
-          <div className="mt-3 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white/50">
-            <span className="rounded border border-white/25 px-1.5 py-0.5 font-mono text-[10px]">G</span>
-            Enter →
-          </div>
-        </div>
-      </motion.button>
-
-      {/* ── LIGHT HALF · THE COMMAND DECK ──────────────────── */}
-      <motion.button
-        animate={{ flexGrow: grow('tech') }}
-        transition={{ type: 'spring', stiffness: 160, damping: 26 }}
-        style={{ flexBasis: 0, flexGrow: 1 }}
-        className="group relative min-h-0 overflow-hidden text-left"
-        onMouseEnter={() => setHover('tech')}
-        onMouseLeave={() => setHover(null)}
-        onClick={() => enter('tech')}
-        aria-label="Enter The Command Deck"
-      >
-        <div className="absolute inset-0 bg-[#f3f1ec]" />
-        {/* ghost type — the deck's atmosphere */}
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute left-6 top-14 font-display font-bold leading-[0.9] tracking-tight text-black transition-all duration-700 md:left-10 md:top-20 ${
-            hover === 'tech' ? 'opacity-[0.10] scale-[1.03]' : 'opacity-[0.06]'
-          }`}
-          style={{ fontSize: 'clamp(4rem, 11vw, 11rem)' }}
-        >
-          Samarth
-          <br />
-          builds.
-        </div>
-        {/* drifting glass slabs */}
-        {[
-          ['14%', '58%', '90px', '8s'], ['52%', '70%', '130px', '11s'], ['70%', '30%', '70px', '9s'],
-        ].map(([top, left, size, dur], i) => (
-          <div
-            key={i}
-            aria-hidden
-            className="pointer-events-none absolute rounded-lg border border-black/[0.05] bg-white/60 backdrop-blur-[2px]"
-            style={{
-              top, left, width: size, height: `calc(${size} * 1.4)`,
-              animation: `floaty ${dur} ease-in-out infinite`,
-              animationDelay: `${i * 1.3}s`,
-              boxShadow: '0 14px 34px rgba(15,18,25,0.07)',
-            }}
-          />
-        ))}
-        <div className="relative flex h-full flex-col justify-end p-6 md:items-end md:p-10 md:text-right">
-          <span className="mb-2 w-fit rounded border border-emerald-700/50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.3em] text-emerald-700">
-            Director mode
-          </span>
-          <h2 className="font-display text-4xl font-bold text-[#121317] md:text-6xl">The Command Deck</h2>
-          <p className={`mt-2 max-w-xs text-sm text-black/55 transition-all duration-500 md:text-base ${
-            hover === 'tech' ? 'translate-y-0 opacity-100' : 'md:translate-y-2 md:opacity-0'
-          }`}>
-            A decade of building, told big — autonomous AI delivery, the climb, the numbers.
-          </p>
-          <div className="mt-3 hidden md:block">
-            <ExperienceTicker suffix={techHero.tickerSuffix} />
-          </div>
-          <div className="mt-3 flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-black/45">
-            <span className="rounded border border-black/25 px-1.5 py-0.5 font-mono text-[10px]">T</span>
-            Enter →
-          </div>
-        </div>
-      </motion.button>
-
-      {/* ── THE SEAM — copy that inverts across both worlds ── */}
+    <div className="fixed inset-0 z-30 flex flex-col bg-[#0a0b0f]">
+      {/* ── TITLE STRIP ────────────────────────────────────── */}
       {!leaving && (
-        <div className="pointer-events-none absolute inset-x-0 top-[8%] z-10 flex flex-col items-center text-center mix-blend-difference md:top-[10%]">
+        <div className="flex shrink-0 flex-col items-center px-4 pb-3 pt-4 text-center md:pb-4 md:pt-6">
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="text-[11px] uppercase tracking-[0.4em] text-white/70"
+            className="text-[10px] uppercase tracking-[0.4em] text-white/45"
           >
             {profile.name} · {profile.role}
           </motion.p>
           <motion.h1
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="mt-2 font-display text-4xl font-bold uppercase tracking-tight text-white md:text-6xl"
+            transition={{ duration: 0.6, delay: 0.08 }}
+            className="mt-1 font-display text-2xl font-bold uppercase tracking-tight text-white md:text-4xl"
           >
-            Two worlds. One builder.
+            Two worlds.{' '}
+            <span className="bg-gradient-to-r from-accent via-glow to-emerald-300 bg-clip-text text-transparent">
+              One builder.
+            </span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-2 text-sm text-white/70 md:text-base"
+            transition={{ delay: 0.25 }}
+            className="mt-1 text-xs text-white/50 md:text-sm"
           >
-            Which one do you need?
+            Pick a door — you can cross over anytime.
           </motion.p>
         </div>
       )}
-      {!leaving && (
-        <p className="pointer-events-none absolute inset-x-0 bottom-3 z-10 text-center text-[10px] uppercase tracking-[0.35em] text-white/55 mix-blend-difference">
-          You can cross over anytime
-        </p>
-      )}
+
+      {/* ── THE TWO DOORS ──────────────────────────────────── */}
+      <div className="flex min-h-0 flex-1 flex-col gap-2.5 p-2.5 pt-0 md:flex-row md:gap-3 md:p-3 md:pt-0">
+        {/* DARK DOOR · THE GARAGE */}
+        <motion.button
+          animate={{ flexGrow: grow('garage') }}
+          transition={{ type: 'spring', stiffness: 160, damping: 26 }}
+          style={{ flexBasis: 0, flexGrow: 1 }}
+          className={`group relative min-h-0 overflow-hidden rounded-2xl border-2 text-left transition-colors duration-300 ${
+            hover === 'garage' ? 'border-accent' : 'border-white/15'
+          }`}
+          onMouseEnter={() => {
+            setHover('garage')
+            setVideoOn(true)
+            videoRef.current?.play().catch(() => {})
+          }}
+          onMouseLeave={() => setHover(null)}
+          onClick={() => enter('garage')}
+          aria-label="Enter The Garage"
+        >
+          <div className="absolute inset-0 bg-[#05060a]" />
+          <img
+            src="/cars/2026-mercedes-c300.jpg"
+            alt=""
+            className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${
+              hover === 'garage' ? 'opacity-85 scale-105' : 'opacity-60'
+            }`}
+          />
+          {videoOn && (
+            <video
+              ref={videoRef}
+              src="/cars/2026-mercedes-c300.mp4"
+              muted
+              loop
+              playsInline
+              autoPlay
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+                hover === 'garage' || leaving === 'garage' ? 'opacity-90' : 'opacity-0'
+              }`}
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40" />
+
+          {/* door number */}
+          <span className="absolute left-5 top-4 font-mono text-[10px] uppercase tracking-[0.3em] text-accent md:left-7 md:top-6">
+            Door 01 · Gearhead mode
+          </span>
+
+          <div className="relative flex h-full flex-col items-start justify-end p-5 md:p-9">
+            <h2 className="font-display text-4xl font-bold text-white md:text-6xl">The Garage</h2>
+            <p className="mt-2 max-w-sm text-sm text-white/70 md:text-base">
+              Eight machines in a neon showroom — turntables, spec sheets, and the story of every
+              set of keys.
+            </p>
+            <span
+              className={`mt-4 inline-flex items-center gap-2 rounded-full border-2 px-6 py-2.5 font-display text-sm font-semibold uppercase tracking-[0.2em] transition-all duration-300 md:px-8 md:py-3 ${
+                hover === 'garage'
+                  ? 'border-accent bg-accent text-ink'
+                  : 'border-accent/70 text-accent'
+              }`}
+            >
+              Enter the garage →
+              <kbd className="rounded border border-current px-1.5 py-0.5 font-mono text-[10px]">G</kbd>
+            </span>
+          </div>
+        </motion.button>
+
+        {/* LIGHT DOOR · THE COMMAND DECK */}
+        <motion.button
+          animate={{ flexGrow: grow('tech') }}
+          transition={{ type: 'spring', stiffness: 160, damping: 26 }}
+          style={{ flexBasis: 0, flexGrow: 1 }}
+          className={`group relative min-h-0 overflow-hidden rounded-2xl border-2 text-left transition-colors duration-300 ${
+            hover === 'tech' ? 'border-emerald-500' : 'border-white/15'
+          }`}
+          onMouseEnter={() => setHover('tech')}
+          onMouseLeave={() => setHover(null)}
+          onClick={() => enter('tech')}
+          aria-label="Enter The Command Deck"
+        >
+          <div className="absolute inset-0 bg-[#f3f1ec]" />
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute left-5 top-10 font-display font-bold leading-[0.9] tracking-tight text-black transition-all duration-700 md:left-8 md:top-16 ${
+              hover === 'tech' ? 'opacity-[0.10] scale-[1.03]' : 'opacity-[0.06]'
+            }`}
+            style={{ fontSize: 'clamp(3.4rem, 9vw, 9rem)' }}
+          >
+            Samarth
+            <br />
+            builds.
+          </div>
+          {[
+            ['16%', '60%', '80px', '8s'], ['50%', '72%', '110px', '11s'], ['66%', '34%', '64px', '9s'],
+          ].map(([top, left, size, dur], i) => (
+            <div
+              key={i}
+              aria-hidden
+              className="pointer-events-none absolute rounded-lg border border-black/[0.05] bg-white/60 backdrop-blur-[2px]"
+              style={{
+                top, left, width: size, height: `calc(${size} * 1.4)`,
+                animation: `floaty ${dur} ease-in-out infinite`,
+                animationDelay: `${i * 1.3}s`,
+                boxShadow: '0 14px 34px rgba(15,18,25,0.07)',
+              }}
+            />
+          ))}
+
+          <span className="absolute left-5 top-4 font-mono text-[10px] uppercase tracking-[0.3em] text-emerald-700 md:left-7 md:top-6">
+            Door 02 · Director mode
+          </span>
+
+          <div className="relative flex h-full flex-col items-start justify-end p-5 md:p-9">
+            <h2 className="font-display text-4xl font-bold text-[#121317] md:text-6xl">
+              The Command Deck
+            </h2>
+            <p className="mt-2 max-w-sm text-sm text-black/60 md:text-base">
+              A decade of building, told big — autonomous AI delivery, the climb to Director, and
+              the numbers behind it.
+            </p>
+            <div className="mt-2 hidden md:block">
+              <ExperienceTicker suffix={techHero.tickerSuffix} />
+            </div>
+            <span
+              className={`mt-4 inline-flex items-center gap-2 rounded-full border-2 px-6 py-2.5 font-display text-sm font-semibold uppercase tracking-[0.2em] transition-all duration-300 md:px-8 md:py-3 ${
+                hover === 'tech'
+                  ? 'border-emerald-600 bg-emerald-600 text-white'
+                  : 'border-emerald-700/70 text-emerald-700'
+              }`}
+            >
+              Enter the deck →
+              <kbd className="rounded border border-current px-1.5 py-0.5 font-mono text-[10px]">T</kbd>
+            </span>
+          </div>
+        </motion.button>
+      </div>
     </div>
   )
 }
