@@ -34,40 +34,8 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
 
   return (
     <div className="fixed inset-0 z-30 flex flex-col bg-[#0a0b0f]">
-      {/* ── TITLE STRIP ────────────────────────────────────── */}
-      {!leaving && (
-        <div className="flex shrink-0 flex-col items-center px-4 pb-3 pt-4 text-center md:pb-4 md:pt-6">
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-[10px] uppercase tracking-[0.4em] text-white/45"
-          >
-            {profile.name} · {profile.role}
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.08 }}
-            className="mt-1 font-display text-2xl font-bold uppercase tracking-tight text-white md:text-4xl"
-          >
-            Two worlds.{' '}
-            <span className="bg-gradient-to-r from-accent via-glow to-emerald-300 bg-clip-text text-transparent">
-              One builder.
-            </span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.25 }}
-            className="mt-1 text-xs text-white/50 md:text-sm"
-          >
-            Pick a door — you can cross over anytime.
-          </motion.p>
-        </div>
-      )}
-
-      {/* ── THE TWO DOORS ──────────────────────────────────── */}
-      <div className="flex min-h-0 flex-1 flex-col gap-2.5 p-2.5 pt-0 md:flex-row md:gap-3 md:p-3 md:pt-0">
+      {/* ── THE TWO DOORS — full bleed, thin seam ──────────── */}
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 md:flex-row md:gap-2">
         {/* DARK DOOR · THE GARAGE */}
         <motion.button
           animate={{ flexGrow: grow('garage') }}
@@ -110,15 +78,21 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
 
           {/* door number */}
           <span className="absolute left-5 top-4 font-mono text-[10px] uppercase tracking-[0.3em] text-accent md:left-7 md:top-6">
-            Door 01 · Gearhead mode
+            Door 01 · The passion
           </span>
 
           <div className="relative flex h-full flex-col items-start justify-end p-5 md:p-9">
             <h2 className="font-display text-4xl font-bold text-white md:text-6xl">The Garage</h2>
             <p className="mt-2 max-w-sm text-sm text-white/70 md:text-base">
-              Eight machines in a neon showroom — turntables, spec sheets, and the story of every
-              set of keys.
+              The machines I've owned, rendered like a game — and the story behind every set of keys.
             </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {['8 machines', 'Spinning turntables', 'Neon showroom'].map((c) => (
+                <span key={c} className="rounded-full border border-white/20 px-3 py-1 text-[11px] text-white/65">
+                  {c}
+                </span>
+              ))}
+            </div>
             <span
               className={`mt-4 inline-flex items-center gap-2 rounded-full border-2 px-6 py-2.5 font-display text-sm font-semibold uppercase tracking-[0.2em] transition-all duration-300 md:px-8 md:py-3 ${
                 hover === 'garage'
@@ -174,17 +148,27 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
           ))}
 
           <span className="absolute left-5 top-4 font-mono text-[10px] uppercase tracking-[0.3em] text-emerald-700 md:left-7 md:top-6">
-            Door 02 · Director mode
+            Door 02 · The portfolio
           </span>
 
           <div className="relative flex h-full flex-col items-start justify-end p-5 md:p-9">
-            <h2 className="font-display text-4xl font-bold text-[#121317] md:text-6xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-black/50">
+              {profile.name} — {profile.role}
+            </p>
+            <h2 className="mt-1 font-display text-4xl font-bold text-[#121317] md:text-6xl">
               The Command Deck
             </h2>
-            <p className="mt-2 max-w-sm text-sm text-black/60 md:text-base">
-              A decade of building, told big — autonomous AI delivery, the climb to Director, and
-              the numbers behind it.
+            <p className="mt-2 max-w-md text-sm text-black/60 md:text-base">
+              My professional world — a decade of engineering leadership, AI systems that survive
+              production, and the business results behind them.
             </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {['The AI story', 'The climb: SDE → Director', 'Results & receipts', 'Work with me'].map((c) => (
+                <span key={c} className="rounded-full border border-black/15 px-3 py-1 text-[11px] text-black/60">
+                  {c}
+                </span>
+              ))}
+            </div>
             <div className="mt-2 hidden md:block">
               <ExperienceTicker suffix={techHero.tickerSuffix} />
             </div>
@@ -200,6 +184,28 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
             </span>
           </div>
         </motion.button>
+      </div>
+
+      {/* ── SEAM BADGE — one builder, two worlds ───────────── */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 md:block"
+        style={{ opacity: hover || leaving ? 0 : 1 }}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex flex-col items-center"
+        >
+          <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-white/70 bg-[#0a0b0f]/85 shadow-[0_0_40px_rgba(0,0,0,0.5)] backdrop-blur-md">
+            <span className="bg-gradient-to-br from-accent via-glow to-emerald-300 bg-clip-text font-display text-3xl font-bold text-transparent">
+              SS
+            </span>
+          </div>
+          <span className="mt-2 rounded-full bg-[#0a0b0f]/80 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-white/75 backdrop-blur-sm">
+            One builder · two worlds
+          </span>
+        </motion.div>
       </div>
     </div>
   )
