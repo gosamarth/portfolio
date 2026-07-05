@@ -13,11 +13,22 @@ import { JOURNEY_HTML_ID, handleJourneyScroll, setJourneyPages, scrollState } fr
 import { RevCounter } from './ui/RevCounter'
 import { IgnitionLoader } from './ui/IgnitionLoader'
 import type { WorldMode } from './world'
+import { DreamGarage } from './ui/DreamGarage'
 
 export default function App() {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const [mode, setMode] = useState<WorldMode>('select')
+  const [dreamOpen, setDreamOpen] = useState(false)
   const inWorld = mode !== 'select'
+
+  // track world visits for the secret unlock
+  useEffect(() => {
+    if (inWorld) localStorage.setItem(`visited-${mode}`, '1')
+  }, [mode, inWorld])
+  const unlocked =
+    typeof localStorage !== 'undefined' &&
+    localStorage.getItem('visited-garage') === '1' &&
+    localStorage.getItem('visited-tech') === '1'
   const pages = mode === 'tech' ? TECH_PAGES : PAGES
 
   // keep the scroll bridge aware of the active world's length
@@ -101,10 +112,13 @@ export default function App() {
       {mode === 'garage' && <RevCounter />}
 
       {/* World selection screen */}
-      {mode === 'select' && <WorldSelect onSelect={setMode} />}
+      {mode === 'select' && <WorldSelect onSelect={setMode} unlocked={unlocked} onDream={() => setDreamOpen(true)} />}
 
       {/* Engine-start loading screen — one ignition per world entry */}
       {inWorld && <IgnitionLoader key={mode} />}
+
+      {/* Secret dream garage */}
+      {dreamOpen && <DreamGarage onClose={() => setDreamOpen(false)} />}
     </div>
   )
 }

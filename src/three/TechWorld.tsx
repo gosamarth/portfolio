@@ -4,7 +4,7 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { scrollState } from '../scrollBridge'
-import { TECH_PAGES, irl, techHero } from '../data/tech'
+import { TECH_PAGES, IRL_PAGE, irl, techHero } from '../data/tech'
 
 // ─────────────────────────────────────────────────────────────
 //  THE COMMAND DECK world: flying low over a living circuit
@@ -205,24 +205,24 @@ export function TechWorld() {
       <ChipCity />
       <DataPulses />
 
-      {/* stops: hero portrait, pillar gates, console, IRL photo wall */}
-      <HoloGate z={techZAtPage(0) - 9} color="#34d399" />
+      {/* one holo gate per story beat */}
+      {['#34d399', '#34d399', '#34d399', '#22d3ee', '#a78bfa', '#38bdf8', '#fbbf24', '#22d3ee', '#fbbf24', '#34d399', '#22d3ee', '#34d399'].map(
+        (color, page) => (
+          <HoloGate key={page} z={techZAtPage(page) - 9} color={color} />
+        ),
+      )}
+
+      {/* hero portrait panel */}
       <HoloPanel url={techHero.portrait} z={techZAtPage(0) - 8.5} x={4.1} y={1.0} w={3.3} tilt={-0.28} />
 
-      <HoloGate z={techZAtPage(1) - 9} color="#34d399" />
-      <HoloGate z={techZAtPage(2) - 9} color="#38bdf8" />
-      <HoloGate z={techZAtPage(3) - 9} color="#c084fc" />
-      <HoloGate z={techZAtPage(4) - 9} color="#fbbf24" />
-
       {/* IRL wall — his travels floating as holo cards */}
-      <HoloGate z={techZAtPage(5) - 9} color="#22d3ee" />
       {irl.photos.slice(0, 5).map((p, i) => {
         const spread = [-5.6, -2.8, 0, 2.8, 5.6][i]
         return (
           <HoloPanel
             key={p.src}
             url={p.src}
-            z={techZAtPage(5) - 9 + Math.abs(spread) * 0.18}
+            z={techZAtPage(IRL_PAGE) - 9 + Math.abs(spread) * 0.18}
             x={spread}
             y={1.7}
             w={2.6}
@@ -231,11 +231,9 @@ export function TechWorld() {
         )
       })}
 
-      <HoloGate z={techZAtPage(6) - 9} color="#34d399" />
-
       {/* stop lights */}
-      <pointLight position={[-6, 4, techZAtPage(2) - 6]} intensity={30} color="#34d399" />
-      <pointLight position={[6, 3, techZAtPage(4) - 6]} intensity={30} color="#fbbf24" />
+      <pointLight position={[-6, 4, techZAtPage(3) - 6]} intensity={30} color="#34d399" />
+      <pointLight position={[6, 3, techZAtPage(8) - 6]} intensity={30} color="#fbbf24" />
 
       <EffectComposer>
         <Bloom intensity={1.0} luminanceThreshold={0.28} luminanceSmoothing={0.9} mipmapBlur />

@@ -176,15 +176,21 @@ export function Sections() {
           {contact.body}
         </motion.p>
         <motion.div {...fade} transition={{ duration: 0.6, delay: 0.18 }} className="mt-8 flex flex-wrap items-center gap-4">
+          <a
+            href={`mailto:${profile.email}`}
+            className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 font-medium text-ink transition hover:bg-white"
+          >
+            {profile.email} →
+          </a>
           {profile.socials.map((s) => (
             <a
               key={s.label}
               href={s.href}
               target="_blank"
               rel="noreferrer"
-              className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3 font-medium text-ink transition hover:bg-white"
+              className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3 font-medium text-white/85 transition hover:bg-white/10"
             >
-              {s.label} →
+              {s.label}
             </a>
           ))}
         </motion.div>

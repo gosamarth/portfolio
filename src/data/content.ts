@@ -10,7 +10,7 @@ export const profile = {
   tagline:
     'Engineering leader by day, gearhead always. I build platforms that scale — and collect the machines that move me.',
   location: 'Delhi, India',
-  email: 'you@example.com', // TODO: set the public contact email you want shown
+  email: 'samarthbuilds@gmail.com',
   socials: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/gosamarth' },
     // TODO: add GitHub / X if you want them shown

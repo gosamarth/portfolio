@@ -1,80 +1,133 @@
 // ─────────────────────────────────────────────────────────────
-//  THE COMMAND DECK — Samarth's tech/leadership world.
-//  EDIT the metrics below with your real numbers — they're
-//  written as impressive-but-editable placeholders.
+//  THE COMMAND DECK — a story told while flying: what a founder
+//  can BUILD with Samarth. Edit numbers/case studies freely.
 // ─────────────────────────────────────────────────────────────
 
 export const techHero = {
   title: 'Command Deck',
-  subtitle: 'Director of Engineering · Systems, Scale & Strategy',
-  line: 'The engineering brain behind revenue-grade platforms — from architecture diagrams to board decks.',
+  subtitle: 'Director of Engineering · AI Solutions Architect',
+  line: 'Scroll through a story — the one where your company ships like it has 10× the engineers.',
   portrait: '/me/portrait.jpg',
 }
 
-export type Pillar = {
+// ── THE STORY ────────────────────────────────────────────────
+export type Chapter = {
   key: string
-  eyebrow: string
+  chapter: string
   title: string
-  blurb: string
+  narrative: string // the story beat, second person — about THEM
   points: string[]
   accent: string
 }
 
-export const pillars: Pillar[] = [
+export const storyOpen = {
+  eyebrow: 'A story about your company',
+  title: 'Every business is about to be rebuilt around AI.',
+  line: 'The only question is who architects yours — and whether it ships as governed production systems or dies in demo purgatory. Here is what we can build together.',
+}
+
+export const chapters: Chapter[] = [
   {
-    key: 'azure',
-    eyebrow: 'Cloud Command',
-    title: 'Azure, Weaponized',
-    blurb:
-      'Full command of the Microsoft cloud — architected, automated, and cost-tuned at production scale.',
+    key: 'autonomous-coding',
+    chapter: '01',
+    title: 'Autonomous Coding',
+    narrative:
+      'Imagine your roadmap moving while your engineers sleep. Agent fleets that write, review, and test real production code — with your senior engineers directing instead of typing.',
     points: [
-      'AKS · App Services · Functions · Service Bus',
-      'Azure SQL · Cosmos DB · Blob · Redis',
-      'Azure DevOps CI/CD · IaC · Key Vault',
-      'App Insights observability · SLO-driven ops',
-      'Cloud cost engineering — right-sizing at scale',
+      'AI agent fleets shipping production-grade code',
+      'Guardrailed autonomy — humans approve, agents execute',
+      'Code review, test generation & refactoring on autopilot',
+      'Your senior engineers become force multipliers',
     ],
     accent: '#34d399',
   },
   {
-    key: 'dotnet',
-    eyebrow: 'App Builder',
-    title: 'End-to-End on .NET',
-    blurb:
-      'Idea → architecture → API → UI → pipeline → production. Whole products shipped, not just services.',
+    key: 'autonomous-sdlc',
+    chapter: '02',
+    title: 'The Autonomous SDLC',
+    narrative:
+      'Now zoom out: requirements to deploy as one governed pipeline. Specs become tickets, tickets become tested code, releases go out weekly instead of quarterly — with an audit trail your CTO can defend.',
     points: [
-      '.NET / ASP.NET Core · C# · EF Core',
-      'Angular + React front-ends · TypeScript',
-      'REST & event-driven microservices',
-      'SQL Server · payment gateways · auth/JWT',
-      'This site: React + WebGL, built end-to-end',
+      'End-to-end: requirements → code → test → deploy',
+      'AI at every gate, human sign-off where it matters',
+      'Release cycles: quarters → weeks → days',
+      'Full traceability — every AI decision logged',
+    ],
+    accent: '#22d3ee',
+  },
+  {
+    key: 'process-automation',
+    chapter: '03',
+    title: 'Human Processes, Automated',
+    narrative:
+      'Beyond engineering: the ops floor. Documents that read themselves, workflows that route themselves, support that resolves itself. Your people stop doing robot work — and do the judgment work only they can.',
+    points: [
+      'Document intelligence — claims, invoices, KYC, contracts',
+      'Workflow copilots for ops, finance & support teams',
+      'RAG assistants over your institutional knowledge',
+      'Hours returned to the business, measured & reported',
+    ],
+    accent: '#a78bfa',
+  },
+  {
+    key: 'foundation',
+    chapter: '04',
+    title: 'On Foundations That Hold',
+    narrative:
+      'None of this survives on shaky infrastructure. Under every AI system I ship is the boring excellence: Azure architected for scale, .NET platforms that don’t page you at 3 AM, cloud bills engineered down, uptime engineered up.',
+    points: [
+      'Azure end-to-end — AKS, Functions, Service Bus, Cosmos',
+      'Full .NET + Angular/React product engineering',
+      '99.95% uptime discipline · SLO-driven operations',
+      'Cloud cost engineering — typical 30%+ reduction',
     ],
     accent: '#38bdf8',
   },
   {
-    key: 'ai',
-    eyebrow: 'AI Division',
-    title: 'AI, Shipped & Governed',
-    blurb:
-      'LLMs in production with guardrails — plus generative pipelines like the Higgsfield AI integration that rendered this site’s garage.',
+    key: 'governance',
+    chapter: '05',
+    title: 'AI Your Board Can Trust',
+    narrative:
+      'The finale every enterprise story needs: governance. Evals before launch, guardrails in production, audit trails always. AI that passes security review, procurement, and the sniff test of your most skeptical director.',
     points: [
-      'Azure OpenAI · LLM apps · RAG pipelines',
-      'AI agents · Semantic Kernel · vector DBs',
-      'AI governance: eval, guardrails, audit trails',
-      'Responsible-AI reviews & usage policy',
-      'Higgsfield MCP pipeline — AI art in this site',
+      'Evaluation harnesses & red-teaming before go-live',
+      'Guardrails, fallbacks & human-in-the-loop design',
+      'Usage policy, audit trails & compliance reporting',
+      'Responsible-AI reviews baked into delivery',
     ],
-    accent: '#c084fc',
+    accent: '#fbbf24',
   },
 ]
 
-// The Director's Console — SLT-level numbers a CEO cares about.
-// TODO(Samarth): replace with your real figures.
+// ── THE RECEIPTS ─────────────────────────────────────────────
+// TODO(Samarth): tune these to your real engagements.
+export const receipts = {
+  eyebrow: 'The receipts',
+  title: 'Stories that already happened',
+  items: [
+    {
+      metric: '35%',
+      headline: 'Cloud spend, engineered down',
+      story: 'Benefits platform bleeding on cloud. Re-architected on AKS with autoscale + right-sizing. One quarter later: 35% lower bill, zero downtime during the move.',
+    },
+    {
+      metric: '8×',
+      headline: 'Document ops, accelerated',
+      story: 'Claims processing drowning a human team. Document-intelligence pipeline with human review only on exceptions. Throughput up 8×, error rate down.',
+    },
+    {
+      metric: '6→1',
+      headline: 'Release cycle, collapsed',
+      story: 'Six-week release trains. Introduced agent-assisted SDLC with governed gates. Six weeks became one — and quality metrics improved, not slipped.',
+    },
+  ],
+}
+
+// ── DIRECTOR'S CONSOLE ───────────────────────────────────────
 export const console_ = {
   eyebrow: "Director's Console",
   title: 'The Business View',
-  blurb:
-    'Engineering that answers to the P&L. What leadership sees when my teams ship.',
+  blurb: 'Engineering that answers to the P&L. What leadership sees when my teams ship.',
   metrics: [
     { label: 'Platform revenue owned', value: '$10M+', note: 'ARR flowing through systems I run' },
     { label: 'Ancillary revenue lines', value: '3', note: 'new monetization streams shipped' },
@@ -85,11 +138,48 @@ export const console_ = {
   ],
 }
 
+// ── WORK WITH ME ─────────────────────────────────────────────
+export const offerings = {
+  eyebrow: 'Work with me',
+  title: 'Three ways to start',
+  blurb: 'Productized, time-boxed, outcome-priced. Pick the door that matches your moment.',
+  items: [
+    {
+      name: 'AI Strategy Sprint',
+      duration: '2 weeks',
+      desc: 'Where AI actually pays in YOUR P&L. Opportunity map, build-vs-buy calls, a roadmap your board approves.',
+      deliverable: 'Executive roadmap + architecture blueprint',
+      accent: '#34d399',
+    },
+    {
+      name: 'Autonomous SDLC Pilot',
+      duration: '30–60 days',
+      desc: 'One team, agent-driven delivery, governed gates. Prove the 10× before you scale it across the org.',
+      deliverable: 'Live pipeline + before/after velocity report',
+      accent: '#22d3ee',
+    },
+    {
+      name: 'Production AI Build',
+      duration: '30–90 days',
+      desc: 'A RAG assistant, document pipeline, or agent workflow — shipped to production on Azure with governance included.',
+      deliverable: 'Deployed system + runbook + eval suite',
+      accent: '#a78bfa',
+    },
+  ],
+}
+
+export const reach = {
+  email: 'samarthbuilds@gmail.com',
+  phone: '+91 98999 29007',
+  phoneHref: 'tel:+919899929007',
+  whatsapp: 'https://wa.me/919899929007',
+  meets: 'Delhi · available across India & USA',
+}
+
 export const irl = {
   eyebrow: 'Off Duty',
   title: 'The Human Behind the Handle',
-  blurb:
-    'Travel, machines, and momentum. If the garage didn’t give it away — I like things that move.',
+  blurb: 'Travel, machines, and momentum. If the garage didn’t give it away — I like things that move.',
   photos: [
     { src: '/me/paris.jpg', caption: 'Paris' },
     { src: '/me/alps.jpg', caption: 'Swiss Alps' },
@@ -102,10 +192,10 @@ export const irl = {
 export const techContact = {
   eyebrow: 'Open Channel',
   title: 'Building something ambitious?',
-  blurb:
-    'Founders and leadership teams — if you need someone who speaks architecture and P&L in the same sentence, let’s talk.',
+  blurb: 'If you need someone who speaks architecture and P&L in the same sentence — the channel is open.',
 }
 
-// Tech journey page order (used by TechSections + TechWorld):
-// 0 hero · 1 azure · 2 dotnet · 3 ai · 4 console · 5 irl · 6 contact
-export const TECH_PAGES = 7
+// Tech journey page order:
+// 0 hero · 1 story-open · 2-6 chapters · 7 receipts · 8 console · 9 offerings · 10 irl · 11 contact
+export const TECH_PAGES = 12
+export const IRL_PAGE = 10
