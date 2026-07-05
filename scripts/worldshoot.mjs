@@ -1,6 +1,6 @@
 import { chromium } from 'playwright'
 const OUT = process.argv[2] ?? '/tmp'
-const TECH_PAGES = 13
+const TECH_PAGES = 14
 const browser = await chromium.launch({ channel: 'chrome' })
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } })
 await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' })
@@ -19,7 +19,7 @@ const scrollTo = async (p, total) => {
   }, [p, total])
   await page.waitForTimeout(3200)
 }
-for (const p of [0, 1, 2, 7, 10, 12]) {
+for (const p of [1, 2, 3, 8, 11, 12]) {
   await scrollTo(p, TECH_PAGES)
   await page.screenshot({ path: `${OUT}/w-tech-${p}.png` })
   console.log('shot tech', p)

@@ -24,7 +24,7 @@ function diffParts(from: Date, to: Date) {
   return { years, months, days, clock: `${h}:${m}:${s}` }
 }
 
-export function ExperienceTicker() {
+export function ExperienceTicker({ suffix }: { suffix?: string[] }) {
   const [now, setNow] = useState(() => new Date())
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000)
@@ -49,7 +49,7 @@ export function ExperienceTicker() {
       </span>
       <span className="text-sm tabular-nums text-black/35">{d.clock}</span>
       <span className="w-full text-[11px] uppercase tracking-[0.3em] text-black/40 md:w-auto">
-        of building — and counting
+        {(suffix ?? ['of building — and counting']).join(' ')}
       </span>
     </div>
   )

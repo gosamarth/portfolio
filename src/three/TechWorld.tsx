@@ -103,14 +103,14 @@ function InkRing({ z, accent }: { z: number; accent?: string }) {
 
 /** Small floating photo print with soft distance fade. */
 function PhotoPrint({
-  url, z, x = 0, y = 1.4, w = 1.9, tilt = 0,
+  url, z, x = 0, y = 1.4, w = 2.6, tilt = 0,
 }: { url: string; z: number; x?: number; y?: number; w?: number; tilt?: number }) {
   const ref = useRef<any>(null)
   useFrame(({ camera }) => {
     const dist = Math.abs(camera.position.z - z)
     if (ref.current?.material) {
       ref.current.material.transparent = true
-      ref.current.material.opacity = dist > 16 ? 0 : dist < 1.5 ? 0 : Math.min(1, (16 - dist) / 5)
+      ref.current.material.opacity = dist > 21 ? 0 : dist < 1.5 ? 0 : Math.min(1, (21 - dist) / 5)
     }
   })
   return (
@@ -136,10 +136,10 @@ function PorcelainFloor() {
 
 // scattered small prints along the journey (page, x, tilt, photo index)
 const PRINT_STOPS: [number, number, number, number][] = [
-  [2, 4.6, -0.3, 0],
-  [4, -4.8, 0.3, 1],
-  [6, 4.8, -0.28, 3],
-  [9, -4.6, 0.3, 4],
+  [3, 4.9, -0.3, 0],
+  [5, -5.1, 0.3, 1],
+  [7, 5.0, -0.28, 3],
+  [10, -4.9, 0.3, 4],
 ]
 
 export function TechWorld() {
@@ -181,12 +181,12 @@ export function TechWorld() {
         <InkRing
           key={page}
           z={techZAtPage(page) - 9}
-          accent={page === 7 ? '#d97706' : page === 10 ? '#059669' : undefined}
+          accent={page === 8 ? '#d97706' : page === 11 ? '#059669' : undefined}
         />
       ))}
 
       {/* hero portrait — a modest print, not a billboard */}
-      <PhotoPrint url={techHero.portrait} z={techZAtPage(0) - 8.2} x={4.3} y={1.1} w={2.4} tilt={-0.3} />
+      <PhotoPrint url={techHero.portrait} z={techZAtPage(0) - 8.2} x={4.4} y={1.2} w={3.2} tilt={-0.3} />
 
       {/* small prints drifting past through the story */}
       {PRINT_STOPS.map(([page, x, tilt, idx]) => (
@@ -200,18 +200,20 @@ export function TechWorld() {
         />
       ))}
 
-      {/* IRL wall — the full set, gallery-hung */}
+      {/* IRL wall — edges and crown, leaving the center clear for the poem */}
       {irl.photos.slice(0, 5).map((p, i) => {
-        const spread = [-5.4, -2.7, 0, 2.7, 5.4][i]
+        const pos = [
+          [6.4, 4.3], [8.4, 1.4], [10.0, 3.7], [11.6, 1.5], [7.3, -0.5],
+        ][i] as [number, number]
         return (
           <PhotoPrint
             key={p.src}
             url={p.src}
-            z={techZAtPage(IRL_PAGE) - 9 + Math.abs(spread) * 0.16}
-            x={spread}
-            y={1.6}
-            w={2.3}
-            tilt={-spread * 0.05}
+            z={techZAtPage(IRL_PAGE) - 14.5}
+            x={pos[0]}
+            y={pos[1]}
+            w={3.1}
+            tilt={-pos[0] * 0.04}
           />
         )
       })}
