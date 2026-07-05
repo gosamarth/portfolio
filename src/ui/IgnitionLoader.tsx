@@ -12,16 +12,30 @@ const SWEEP_MIN = -120
 const SWEEP_MAX = 120
 
 export function IgnitionLoader() {
-  const { progress } = useProgress()
+  const { progress, active } = useProgress()
   const [phase, setPhase] = useState<'loading' | 'ignition' | 'gone'>('loading')
 
+  // loading → ignition when assets are in (or the manager reports idle)
   useEffect(() => {
-    if (progress >= 100 && phase === 'loading') {
-      setPhase('ignition')
-      const t1 = setTimeout(() => setPhase('gone'), 1100)
-      return () => clearTimeout(t1)
-    }
-  }, [progress, phase])
+    if (phase !== 'loading') return
+    if (progress >= 100 || (!active && progress > 0)) setPhase('ignition')
+  }, [progress, active, phase])
+
+  // ignition → gone after the redline beat (own effect so nothing cancels it)
+  useEffect(() => {
+    if (phase !== 'ignition') return
+    const t = setTimeout(() => setPhase('gone'), 1100)
+    return () => clearTimeout(t)
+  }, [phase])
+
+  // safety: never trap the page for more than 7s, whatever the loaders say
+  useEffect(() => {
+    const t = setTimeout(
+      () => setPhase((p) => (p === 'loading' ? 'ignition' : p)),
+      7000,
+    )
+    return () => clearTimeout(t)
+  }, [])
 
   if (phase === 'gone') return null
 
@@ -31,7 +45,7 @@ export function IgnitionLoader() {
   return (
     <div
       className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink transition-opacity duration-500 ${
-        igniting ? 'opacity-0' : 'opacity-100'
+        igniting ? 'pointer-events-none opacity-0' : 'opacity-100'
       }`}
       style={{ transitionDelay: igniting ? '0.6s' : '0s' }}
     >
