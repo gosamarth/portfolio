@@ -46,8 +46,8 @@ export default function App() {
         if (e.key === 'Escape') setMode('select')
         return
       }
-      if (e.key.toLowerCase() === 'g') setMode('garage')
-      if (e.key.toLowerCase() === 't') setMode('tech')
+      if (e.key.toLowerCase() === 'g' || e.key === 'ArrowLeft') setMode('garage')
+      if (e.key.toLowerCase() === 't' || e.key === 'ArrowRight') setMode('tech')
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -80,7 +80,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Fixed brand mark + world switch */}
+      {/* Fixed brand mark + world switch (worlds only — the seam owns the select screen) */}
+      {inWorld && (
       <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 py-6 md:px-16">
         <span className={`pointer-events-auto font-display text-sm font-semibold tracking-wide ${light ? 'text-[#121317]' : 'text-white'}`}>
           {profile.name}
@@ -99,6 +100,7 @@ export default function App() {
           </button>
         )}
       </header>
+      )}
 
       {/* Scroll-speed tachometer HUD (garage only — the deck has its own vibe) */}
       {mode === 'garage' && <RevCounter />}
