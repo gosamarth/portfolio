@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  background: #05060a;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #e8eaf0;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; /* ScrollControls owns the scroll surface */
+}
+
+/* Thin, on-theme scrollbar inside the ScrollControls surface */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(110, 231, 255, 0.25);
+  border-radius: 999px;
+}
+
+@layer components {
+  .glass {
+    background: rgba(11, 14, 23, 0.55);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .eyebrow {
+    @apply text-xs uppercase tracking-[0.35em] text-accent/80 font-medium;
+  }
+}
+
+/* Respect reduced-motion for the idle 3D drift */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
