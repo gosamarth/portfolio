@@ -1,0 +1,23 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/cars/*", "/me/*", "/tech/*", "*.{jpg,png,svg,mp4,ico,css,js,json}"]
+  },
+  "routes": [
+    {
+      "route": "/assets/*",
+      "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
+    },
+    {
+      "route": "/cars/*",
+      "headers": { "Cache-Control": "public, max-age=604800" }
+    },
+    {
+      "route": "/me/*",
+      "headers": { "Cache-Control": "public, max-age=604800" }
+    }
+  ],
+  "mimeTypes": {
+    ".mp4": "video/mp4"
+  }
+}
