@@ -1,15 +1,14 @@
 import { Image as DreiImage, MeshReflectorMaterial, Float } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { scrollState } from '../scrollBridge'
 import { TECH_PAGES, IRL_PAGE, irl, techHero } from '../data/tech'
 
 // ─────────────────────────────────────────────────────────────
-//  THE COMMAND DECK world: flying low over a living circuit
-//  city — chip towers, data pulses racing along traces, holo
-//  panels at each stop. Emerald / cyan / amber palette.
+//  THE COMMAND DECK, reimagined: a porcelain gallery. Light,
+//  airy, museum-grade — floating glass slabs, ink rings, soft
+//  reflections, and small photo prints drifting past.
 // ─────────────────────────────────────────────────────────────
 
 export const TECH_PAGE_DEPTH = 13
@@ -17,42 +16,37 @@ const CAM_START_Z = 8
 const CAM_TRAVEL = (TECH_PAGES - 1) * TECH_PAGE_DEPTH
 export const techZAtPage = (p: number) => CAM_START_Z - TECH_PAGE_DEPTH * p
 
-const PALETTE = ['#34d399', '#22d3ee', '#fbbf24', '#a7f3d0']
+const BG = '#f3f1ec'
 
-/** Chip towers — an instanced skyline flanking the flight path. */
-function ChipCity() {
-  const count = 260
+/** Floating white glass slabs — the gallery's sculpture field. */
+function GlassSlabs() {
+  const count = 64
   const mesh = useRef<THREE.InstancedMesh>(null)
-  const data = useMemo(() => {
-    const arr: { x: number; z: number; h: number; w: number }[] = []
-    for (let i = 0; i < count; i++) {
-      const side = i % 2 === 0 ? 1 : -1
-      const x = side * (7 + Math.pow(Math.random(), 1.4) * 16)
-      const z = 14 - Math.random() * (CAM_TRAVEL + 40)
-      arr.push({ x, z, h: 0.8 + Math.random() * 5.2, w: 0.7 + Math.random() * 1.6 })
-    }
-    return arr
-  }, [])
-
-  const colors = useMemo(() => {
-    const c = new Float32Array(count * 3)
-    const col = new THREE.Color()
-    for (let i = 0; i < count; i++) {
-      col.set(Math.random() < 0.82 ? '#0a1f1c' : PALETTE[i % PALETTE.length])
-      c[i * 3] = col.r; c[i * 3 + 1] = col.g; c[i * 3 + 2] = col.b
-    }
-    return c
-  }, [])
-
   const dummy = useMemo(() => new THREE.Object3D(), [])
-  useFrame(() => {
+  const slabs = useMemo(
+    () =>
+      Array.from({ length: count }, (_, i) => {
+        const side = i % 2 === 0 ? 1 : -1
+        return {
+          x: side * (5.5 + Math.pow(Math.random(), 1.5) * 11),
+          y: -0.5 + Math.random() * 5,
+          z: 12 - Math.random() * (CAM_TRAVEL + 34),
+          w: 1.2 + Math.random() * 2.6,
+          h: 1.8 + Math.random() * 3.6,
+          rot: (Math.random() - 0.5) * 0.5,
+          phase: Math.random() * Math.PI * 2,
+        }
+      }),
+    [],
+  )
+
+  useFrame(({ clock }) => {
     if (!mesh.current) return
-    // static — set once
-    if ((mesh.current as any).__built) return
-    ;(mesh.current as any).__built = true
-    data.forEach((d, i) => {
-      dummy.position.set(d.x, -2.2 + d.h / 2, d.z)
-      dummy.scale.set(d.w, d.h, d.w)
+    const t = clock.elapsedTime
+    slabs.forEach((s, i) => {
+      dummy.position.set(s.x, s.y + Math.sin(t * 0.4 + s.phase) * 0.25, s.z)
+      dummy.rotation.set(0, s.rot + Math.sin(t * 0.15 + s.phase) * 0.05, 0)
+      dummy.scale.set(s.w, s.h, 0.08)
       dummy.updateMatrix()
       mesh.current!.setMatrixAt(i, dummy.matrix)
     })
@@ -61,116 +55,92 @@ function ChipCity() {
 
   return (
     <instancedMesh ref={mesh} args={[undefined, undefined, count]} frustumCulled={false}>
-      <boxGeometry args={[1, 1, 1]}>
-        <instancedBufferAttribute attach="attributes-color" args={[colors, 3]} />
-      </boxGeometry>
-      <meshStandardMaterial vertexColors metalness={0.4} roughness={0.35} emissiveIntensity={0} />
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial color="#ffffff" roughness={0.25} metalness={0.05} transparent opacity={0.55} />
     </instancedMesh>
   )
 }
 
-/** Data pulses — packets of light racing down the traces toward the horizon. */
-function DataPulses() {
-  const count = 240
-  const mesh = useRef<THREE.InstancedMesh>(null)
-  const dummy = useMemo(() => new THREE.Object3D(), [])
-  const pulses = useMemo(
-    () =>
-      Array.from({ length: count }, () => ({
-        x: (Math.random() - 0.5) * 30,
-        y: -2.05,
-        z: 14 - Math.random() * (CAM_TRAVEL + 40),
-        speed: 8 + Math.random() * 22,
-        len: 0.8 + Math.random() * 2.2,
-      })),
-    [],
-  )
-  const colors = useMemo(() => {
-    const c = new Float32Array(count * 3)
-    const col = new THREE.Color()
+/** Fine dust motes drifting — gives the light air a bit of life. */
+function Dust() {
+  const count = 380
+  const ref = useRef<THREE.Points>(null)
+  const positions = useMemo(() => {
+    const arr = new Float32Array(count * 3)
     for (let i = 0; i < count; i++) {
-      col.set(PALETTE[Math.floor(Math.random() * PALETTE.length)])
-      const dim = 0.4 + Math.random() * 0.6
-      c[i * 3] = col.r * dim; c[i * 3 + 1] = col.g * dim; c[i * 3 + 2] = col.b * dim
+      arr[i * 3] = (Math.random() - 0.5) * 34
+      arr[i * 3 + 1] = -2 + Math.random() * 9
+      arr[i * 3 + 2] = 12 - Math.random() * (CAM_TRAVEL + 34)
     }
-    return c
+    return arr
   }, [])
-
-  useFrame(({ camera }, delta) => {
-    if (!mesh.current) return
-    for (let i = 0; i < count; i++) {
-      const p = pulses[i]
-      p.z -= p.speed * delta // pulses race AWAY down the traces
-      if (p.z < camera.position.z - CAM_TRAVEL - 30) p.z = camera.position.z + 10
-      if (p.z > camera.position.z + 12) p.z -= CAM_TRAVEL + 40
-      dummy.position.set(p.x, p.y, p.z)
-      dummy.scale.set(0.06, 0.02, p.len)
-      dummy.updateMatrix()
-      mesh.current.setMatrixAt(i, dummy.matrix)
-    }
-    mesh.current.instanceMatrix.needsUpdate = true
+  useFrame((_, delta) => {
+    if (ref.current) ref.current.rotation.y += delta * 0.004
   })
-
   return (
-    <instancedMesh ref={mesh} args={[undefined, undefined, count]} frustumCulled={false}>
-      <boxGeometry args={[1, 1, 1]}>
-        <instancedBufferAttribute attach="attributes-color" args={[colors, 3]} />
-      </boxGeometry>
-      <meshBasicMaterial vertexColors toneMapped={false} transparent opacity={0.9} blending={THREE.AdditiveBlending} depthWrite={false} />
-    </instancedMesh>
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial size={0.045} sizeAttenuation color="#9a958a" transparent opacity={0.55} depthWrite={false} />
+    </points>
   )
 }
 
-/** Holo gate — hexagon ring marking each stop. */
-function HoloGate({ z, color }: { z: number; color: string }) {
+/** Thin ink ring marking each story stop — quiet, architectural. */
+function InkRing({ z, accent }: { z: number; accent?: string }) {
   const ref = useRef<THREE.Mesh>(null)
-  useFrame((state) => {
-    if (ref.current) {
-      const m = ref.current.material as THREE.MeshStandardMaterial
-      m.emissiveIntensity = 2 + Math.sin(state.clock.elapsedTime * 2.4 + z) * 0.5
-      ref.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.3 + z) * 0.06
-    }
+  useFrame(({ clock }) => {
+    if (ref.current) ref.current.rotation.z = Math.sin(clock.elapsedTime * 0.2 + z) * 0.04
   })
   return (
-    <mesh ref={ref} position={[0, 1.4, z]}>
-      <torusGeometry args={[7.2, 0.05, 6, 6]} />
-      <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} toneMapped={false} />
+    <mesh ref={ref} position={[0, 1.5, z]}>
+      <torusGeometry args={[6.9, 0.022, 8, 120]} />
+      <meshStandardMaterial color={accent ?? '#15161a'} roughness={0.4} metalness={0.3} />
     </mesh>
   )
 }
 
-/** Floating holo photo panel with distance fade. */
-function HoloPanel({
-  url, z, x = 0, y = 1.6, w = 4.4, tilt = 0,
+/** Small floating photo print with soft distance fade. */
+function PhotoPrint({
+  url, z, x = 0, y = 1.4, w = 1.9, tilt = 0,
 }: { url: string; z: number; x?: number; y?: number; w?: number; tilt?: number }) {
   const ref = useRef<any>(null)
   useFrame(({ camera }) => {
     const dist = Math.abs(camera.position.z - z)
     if (ref.current?.material) {
       ref.current.material.transparent = true
-      ref.current.material.opacity = dist > 17 ? 0 : dist < 2 ? 0 : Math.min(1, (17 - dist) / 5)
+      ref.current.material.opacity = dist > 16 ? 0 : dist < 1.5 ? 0 : Math.min(1, (16 - dist) / 5)
     }
   })
   return (
-    <Float speed={1.3} rotationIntensity={0.06} floatIntensity={0.5}>
-      <DreiImage ref={ref} url={url} scale={[w, w * 1.25]} position={[x, y, z]} rotation={[0, tilt, 0]} radius={0.08} toneMapped={false} />
+    <Float speed={1.2} rotationIntensity={0.08} floatIntensity={0.5}>
+      <DreiImage ref={ref} url={url} scale={[w, w * 1.25]} position={[x, y, z]} rotation={[0, tilt, 0]} radius={0.06} toneMapped={false} />
     </Float>
   )
 }
 
-function TechFloor() {
+function PorcelainFloor() {
   const length = CAM_TRAVEL + 40
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, CAM_START_Z - length / 2 + 10]}>
       <planeGeometry args={[46, length]} />
       <MeshReflectorMaterial
-        blur={[280, 90]} resolution={1024} mixBlur={1} mixStrength={30}
-        roughness={1} depthScale={1.2} minDepthThreshold={0.4} maxDepthThreshold={1.4}
-        color="#04110d" metalness={0.5} mirror={0.65}
+        blur={[420, 140]} resolution={1024} mixBlur={1} mixStrength={4}
+        roughness={0.85} depthScale={0.6} minDepthThreshold={0.4} maxDepthThreshold={1.4}
+        color="#eae7e0" metalness={0.05} mirror={0.3}
       />
     </mesh>
   )
 }
+
+// scattered small prints along the journey (page, x, tilt, photo index)
+const PRINT_STOPS: [number, number, number, number][] = [
+  [2, 4.6, -0.3, 0],
+  [4, -4.8, 0.3, 1],
+  [6, 4.8, -0.28, 3],
+  [9, -4.6, 0.3, 4],
+]
 
 export function TechWorld() {
   const { camera } = useThree()
@@ -184,61 +154,67 @@ export function TechWorld() {
   useFrame((state, delta) => {
     const o = scrollState.offset
     const desiredZ = CAM_START_Z - o * CAM_TRAVEL
-    const px = state.pointer.x * 1.1
-    const py = state.pointer.y * 0.7
+    const px = state.pointer.x * 1.0
+    const py = state.pointer.y * 0.6
     const ease = 1 - Math.pow(0.0015, delta)
     camera.position.z = THREE.MathUtils.lerp(camera.position.z, desiredZ, ease)
     camera.position.x = THREE.MathUtils.lerp(camera.position.x, px, ease)
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, py * 0.6 + 0.5, ease)
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, py * 0.5 + 0.5, ease)
     target.current.set(px * 0.3, py * 0.3 + 0.5, camera.position.z - 10)
     camera.lookAt(target.current)
   })
 
   return (
     <>
-      <color attach="background" args={['#020806']} />
-      <fog attach="fog" args={['#020806', 6, 32]} />
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[6, 9, 4]} intensity={0.8} color="#d1fae5" />
+      <color attach="background" args={[BG]} />
+      <fog attach="fog" args={[BG, 7, 34]} />
+      <ambientLight intensity={1.15} />
+      <directionalLight position={[6, 10, 4]} intensity={1.3} color="#ffffff" />
+      <directionalLight position={[-6, 4, -8]} intensity={0.4} color="#ffe8c7" />
 
-      <TechFloor />
-      <ChipCity />
-      <DataPulses />
+      <PorcelainFloor />
+      <GlassSlabs />
+      <Dust />
 
-      {/* one holo gate per story beat */}
-      {['#34d399', '#34d399', '#34d399', '#22d3ee', '#a78bfa', '#38bdf8', '#fbbf24', '#22d3ee', '#fbbf24', '#34d399', '#22d3ee', '#34d399'].map(
-        (color, page) => (
-          <HoloGate key={page} z={techZAtPage(page) - 9} color={color} />
-        ),
-      )}
+      {/* one quiet ring per story beat — accent rings on key stops */}
+      {Array.from({ length: TECH_PAGES }, (_, page) => (
+        <InkRing
+          key={page}
+          z={techZAtPage(page) - 9}
+          accent={page === 7 ? '#d97706' : page === 10 ? '#059669' : undefined}
+        />
+      ))}
 
-      {/* hero portrait panel */}
-      <HoloPanel url={techHero.portrait} z={techZAtPage(0) - 8.5} x={4.1} y={1.0} w={3.3} tilt={-0.28} />
+      {/* hero portrait — a modest print, not a billboard */}
+      <PhotoPrint url={techHero.portrait} z={techZAtPage(0) - 8.2} x={4.3} y={1.1} w={2.4} tilt={-0.3} />
 
-      {/* IRL wall — his travels floating as holo cards */}
+      {/* small prints drifting past through the story */}
+      {PRINT_STOPS.map(([page, x, tilt, idx]) => (
+        <PhotoPrint
+          key={`${page}-${idx}`}
+          url={irl.photos[idx].src}
+          z={techZAtPage(page) - 8.6}
+          x={x}
+          y={1.2 + (idx % 2) * 0.5}
+          tilt={tilt}
+        />
+      ))}
+
+      {/* IRL wall — the full set, gallery-hung */}
       {irl.photos.slice(0, 5).map((p, i) => {
-        const spread = [-5.6, -2.8, 0, 2.8, 5.6][i]
+        const spread = [-5.4, -2.7, 0, 2.7, 5.4][i]
         return (
-          <HoloPanel
+          <PhotoPrint
             key={p.src}
             url={p.src}
-            z={techZAtPage(IRL_PAGE) - 9 + Math.abs(spread) * 0.18}
+            z={techZAtPage(IRL_PAGE) - 9 + Math.abs(spread) * 0.16}
             x={spread}
-            y={1.7}
-            w={2.6}
+            y={1.6}
+            w={2.3}
             tilt={-spread * 0.05}
           />
         )
       })}
-
-      {/* stop lights */}
-      <pointLight position={[-6, 4, techZAtPage(3) - 6]} intensity={30} color="#34d399" />
-      <pointLight position={[6, 3, techZAtPage(8) - 6]} intensity={30} color="#fbbf24" />
-
-      <EffectComposer>
-        <Bloom intensity={1.0} luminanceThreshold={0.28} luminanceSmoothing={0.9} mipmapBlur />
-        <Vignette eskil={false} offset={0.15} darkness={0.85} />
-      </EffectComposer>
     </>
   )
 }

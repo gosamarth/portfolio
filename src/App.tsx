@@ -13,22 +13,12 @@ import { JOURNEY_HTML_ID, handleJourneyScroll, setJourneyPages, scrollState } fr
 import { RevCounter } from './ui/RevCounter'
 import { IgnitionLoader } from './ui/IgnitionLoader'
 import type { WorldMode } from './world'
-import { DreamGarage } from './ui/DreamGarage'
 
 export default function App() {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const [mode, setMode] = useState<WorldMode>('select')
-  const [dreamOpen, setDreamOpen] = useState(false)
   const inWorld = mode !== 'select'
-
-  // track world visits for the secret unlock
-  useEffect(() => {
-    if (inWorld) localStorage.setItem(`visited-${mode}`, '1')
-  }, [mode, inWorld])
-  const unlocked =
-    typeof localStorage !== 'undefined' &&
-    localStorage.getItem('visited-garage') === '1' &&
-    localStorage.getItem('visited-tech') === '1'
+  const light = mode === 'tech'
   const pages = mode === 'tech' ? TECH_PAGES : PAGES
 
   // keep the scroll bridge aware of the active world's length
@@ -92,14 +82,16 @@ export default function App() {
 
       {/* Fixed brand mark + world switch */}
       <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 py-6 md:px-16">
-        <span className="pointer-events-auto font-display text-sm font-semibold tracking-wide text-white">
+        <span className={`pointer-events-auto font-display text-sm font-semibold tracking-wide ${light ? 'text-[#121317]' : 'text-white'}`}>
           {profile.name}
         </span>
         {inWorld && (
           <button
             onClick={() => setMode('select')}
-            className={`pointer-events-auto rounded-full border px-4 py-1.5 text-[11px] uppercase tracking-[0.25em] transition hover:bg-white/10 ${
-              mode === 'garage' ? 'border-accent/40 text-accent' : 'border-emerald-300/40 text-emerald-300'
+            className={`pointer-events-auto rounded-full border px-4 py-1.5 text-[11px] uppercase tracking-[0.25em] transition ${
+              light
+                ? 'border-black/25 text-black/70 hover:bg-black/5'
+                : 'border-accent/40 text-accent hover:bg-white/10'
             }`}
             title="Esc"
           >
@@ -112,13 +104,10 @@ export default function App() {
       {mode === 'garage' && <RevCounter />}
 
       {/* World selection screen */}
-      {mode === 'select' && <WorldSelect onSelect={setMode} unlocked={unlocked} onDream={() => setDreamOpen(true)} />}
+      {mode === 'select' && <WorldSelect onSelect={setMode} />}
 
       {/* Engine-start loading screen — one ignition per world entry */}
       {inWorld && <IgnitionLoader key={mode} />}
-
-      {/* Secret dream garage */}
-      {dreamOpen && <DreamGarage onClose={() => setDreamOpen(false)} />}
     </div>
   )
 }

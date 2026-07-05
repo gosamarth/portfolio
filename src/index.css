@@ -40,6 +40,12 @@ body {
   .eyebrow {
     @apply text-xs uppercase tracking-[0.35em] text-accent/80 font-medium;
   }
+  .glass-light {
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(10, 12, 16, 0.08);
+    box-shadow: 0 18px 50px rgba(15, 18, 25, 0.08);
+  }
 }
 
 /* Respect reduced-motion for the idle 3D drift */

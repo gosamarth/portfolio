@@ -10,6 +10,25 @@ export const techHero = {
   portrait: '/me/portrait.jpg',
 }
 
+// Live experience ticker. TODO(Samarth): set your true first day in tech.
+export const CAREER_EPOCH = '2015-07-01T09:00:00+05:30'
+export const BORN = '1995-02-17'
+
+// ── THE CLIMB ────────────────────────────────────────────────
+// Deliberately no dates per seat — the arc speaks for itself.
+export const journey = {
+  eyebrow: 'The climb',
+  title: 'Five seats. One decade. All production.',
+  line: 'Every promotion earned where it counts — in shipped systems, not slide decks.',
+  steps: [
+    { role: 'Software Engineer', note: 'Where the craft was forged' },
+    { role: 'Senior Engineer', note: 'Owning systems end to end' },
+    { role: 'Team Lead', note: 'First multiplier: people' },
+    { role: 'Engineering Manager', note: 'Delivery became a discipline' },
+    { role: 'Director of Engineering', note: 'Architecture meets P&L' },
+  ],
+}
+
 // ── THE STORY ────────────────────────────────────────────────
 export type Chapter = {
   key: string
@@ -39,7 +58,7 @@ export const chapters: Chapter[] = [
       'Code review, test generation & refactoring on autopilot',
       'Your senior engineers become force multipliers',
     ],
-    accent: '#34d399',
+    accent: '#059669',
   },
   {
     key: 'autonomous-sdlc',
@@ -53,7 +72,7 @@ export const chapters: Chapter[] = [
       'Release cycles: quarters → weeks → days',
       'Full traceability — every AI decision logged',
     ],
-    accent: '#22d3ee',
+    accent: '#0284c7',
   },
   {
     key: 'process-automation',
@@ -67,7 +86,7 @@ export const chapters: Chapter[] = [
       'RAG assistants over your institutional knowledge',
       'Hours returned to the business, measured & reported',
     ],
-    accent: '#a78bfa',
+    accent: '#7c3aed',
   },
   {
     key: 'foundation',
@@ -81,7 +100,7 @@ export const chapters: Chapter[] = [
       '99.95% uptime discipline · SLO-driven operations',
       'Cloud cost engineering — typical 30%+ reduction',
     ],
-    accent: '#38bdf8',
+    accent: '#2563eb',
   },
   {
     key: 'governance',
@@ -95,7 +114,7 @@ export const chapters: Chapter[] = [
       'Usage policy, audit trails & compliance reporting',
       'Responsible-AI reviews baked into delivery',
     ],
-    accent: '#fbbf24',
+    accent: '#d97706',
   },
 ]
 
@@ -149,21 +168,21 @@ export const offerings = {
       duration: '2 weeks',
       desc: 'Where AI actually pays in YOUR P&L. Opportunity map, build-vs-buy calls, a roadmap your board approves.',
       deliverable: 'Executive roadmap + architecture blueprint',
-      accent: '#34d399',
+      accent: '#059669',
     },
     {
       name: 'Autonomous SDLC Pilot',
       duration: '30–60 days',
       desc: 'One team, agent-driven delivery, governed gates. Prove the 10× before you scale it across the org.',
       deliverable: 'Live pipeline + before/after velocity report',
-      accent: '#22d3ee',
+      accent: '#0284c7',
     },
     {
       name: 'Production AI Build',
       duration: '30–90 days',
       desc: 'A RAG assistant, document pipeline, or agent workflow — shipped to production on Azure with governance included.',
       deliverable: 'Deployed system + runbook + eval suite',
-      accent: '#a78bfa',
+      accent: '#7c3aed',
     },
   ],
 }
@@ -196,6 +215,6 @@ export const techContact = {
 }
 
 // Tech journey page order:
-// 0 hero · 1 story-open · 2-6 chapters · 7 receipts · 8 console · 9 offerings · 10 irl · 11 contact
-export const TECH_PAGES = 12
-export const IRL_PAGE = 10
+// 0 hero · 1 story-open · 2-6 chapters · 7 journey · 8 receipts · 9 console · 10 offerings · 11 irl · 12 contact
+export const TECH_PAGES = 13
+export const IRL_PAGE = 11

@@ -55,9 +55,7 @@ function PortalCard({
   )
 }
 
-export function WorldSelect({
-  onSelect, unlocked, onDream,
-}: { onSelect: (m: WorldMode) => void; unlocked?: boolean; onDream?: () => void }) {
+export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) {
   return (
     <div className="fixed inset-0 z-30 flex flex-col items-center justify-center bg-ink px-5">
       {/* ambient grid backdrop */}
@@ -102,7 +100,7 @@ export function WorldSelect({
         <PortalCard
           title="The Command Deck"
           tag="Director Mode"
-          desc="Azure at scale, .NET end-to-end, governed AI — and the P&L numbers leadership actually reads."
+          desc="A decade of building, told big: autonomous AI delivery, the climb to Director, and the numbers behind it."
           img="/tech/circuit-city.jpg"
           accent="#34d399"
           keycap="T"
@@ -111,27 +109,14 @@ export function WorldSelect({
         />
       </div>
 
-      {unlocked ? (
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          onClick={onDream}
-          className="mt-8 rounded-full border border-amber-300/50 px-5 py-2 text-xs uppercase tracking-[0.3em] text-amber-300 transition hover:bg-amber-300/10"
-          style={{ boxShadow: '0 0 24px rgba(251,191,36,0.15)' }}
-        >
-          🔓 Secret unlocked — open the dream garage
-        </motion.button>
-      ) : (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-          className="mt-8 text-xs uppercase tracking-[0.3em] text-white/30"
-        >
-          Explore both worlds… something unlocks
-        </motion.p>
-      )}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7 }}
+        className="mt-8 text-xs uppercase tracking-[0.3em] text-white/30"
+      >
+        You can switch worlds anytime
+      </motion.p>
     </div>
   )
 }
