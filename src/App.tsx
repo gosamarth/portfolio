@@ -12,12 +12,25 @@ import { TECH_PAGES } from './data/tech'
 import { JOURNEY_HTML_ID, handleJourneyScroll, setJourneyPages, scrollState } from './scrollBridge'
 import { RevCounter } from './ui/RevCounter'
 import { IgnitionLoader } from './ui/IgnitionLoader'
+import { TrialsGate } from './trials/TrialsGate'
+import { trialsCleared } from './trials/trials'
 import type { WorldMode } from './world'
 
 export default function App() {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const [mode, setMode] = useState<WorldMode>('select')
+  const [trialsOpen, setTrialsOpen] = useState(false)
   const inWorld = mode !== 'select'
+
+  // The portfolio is guarded — THE TRIALS open unless already cleared.
+  const requestMode = (m: WorldMode) => {
+    if (m === 'tech' && !trialsCleared()) {
+      setTrialsOpen(true)
+      return
+    }
+    setTrialsOpen(false)
+    setMode(m)
+  }
   const light = mode === 'tech'
   const pages = mode === 'tech' ? TECH_PAGES : PAGES
 
@@ -39,19 +52,20 @@ export default function App() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  // world-select keyboard shortcuts
+  // world-select keyboard shortcuts (dormant while THE TRIALS are running)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (trialsOpen) return
       if (mode !== 'select') {
         if (e.key === 'Escape') setMode('select')
         return
       }
-      if (e.key.toLowerCase() === 'g' || e.key === 'ArrowLeft') setMode('garage')
-      if (e.key.toLowerCase() === 't' || e.key === 'ArrowRight') setMode('tech')
+      if (e.key.toLowerCase() === 'g' || e.key === 'ArrowLeft') requestMode('garage')
+      if (e.key.toLowerCase() === 't' || e.key === 'ArrowRight') requestMode('tech')
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [mode])
+  }, [mode, trialsOpen])
 
   return (
     <div className="fixed inset-0">
@@ -106,7 +120,18 @@ export default function App() {
       {mode === 'garage' && <RevCounter />}
 
       {/* World selection screen */}
-      {mode === 'select' && <WorldSelect onSelect={setMode} />}
+      {mode === 'select' && <WorldSelect onSelect={requestMode} />}
+
+      {/* THE TRIALS — the gauntlet guarding the portfolio */}
+      {trialsOpen && (
+        <TrialsGate
+          onVictory={() => {
+            setTrialsOpen(false)
+            setMode('tech')
+          }}
+          onClose={() => setTrialsOpen(false)}
+        />
+      )}
 
       {/* Engine-start loading screen — one ignition per world entry */}
       {inWorld && <IgnitionLoader key={mode} />}

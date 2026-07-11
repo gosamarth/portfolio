@@ -4,7 +4,7 @@ import type { Car } from '../data/cars'
 const fade = {
   initial: { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { amount: 0.4 },
+  viewport: { amount: 0.12 },
 }
 
 function Stat({ label, value }: { label: string; value?: string }) {
@@ -39,7 +39,7 @@ export function CarHud({ car, index }: { car: Car; index: number }) {
         <motion.div
           initial={{ opacity: 0, scale: 1.6, rotate: -14 }}
           whileInView={{ opacity: 1, scale: 1, rotate: -8 }}
-          viewport={{ amount: 0.4 }}
+          viewport={{ amount: 0.15 }}
           transition={{ type: 'spring', stiffness: 300, damping: 16 }}
           className={`select-none border-[3px] px-4 py-1.5 font-display text-sm font-bold uppercase tracking-[0.35em] md:text-base ${
             owned

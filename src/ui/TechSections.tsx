@@ -9,14 +9,14 @@ import { ExperienceTicker } from './ExperienceTicker'
 const fade = {
   initial: { opacity: 0, y: 30 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { amount: 0.4 },
+  viewport: { amount: 0.12 },
 }
 
 const INK = '#121317'
 
 /** Film-title style line reveals: each line lands on its own beat. */
 function Poem({
-  lines, className = '', lineClass = '', delay = 0, amount = 0.35,
+  lines, className = '', lineClass = '', delay = 0, amount = 0.15,
 }: {
   lines: string[]
   className?: string
@@ -104,7 +104,7 @@ export function TechSections() {
         <motion.p
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.4 }}
+          viewport={{ amount: 0.15 }}
           transition={{ duration: 0.7, delay: 1.2 }}
           className="mt-10 font-display text-4xl font-bold tracking-tight md:text-6xl"
         >
@@ -126,7 +126,7 @@ export function TechSections() {
               <Poem
                 lines={c.lines}
                 delay={0.15}
-                amount={0.25}
+                amount={0.1}
                 className="mt-6"
                 lineClass="text-base font-medium text-black/65 md:text-xl md:leading-snug"
               />
@@ -134,7 +134,7 @@ export function TechSections() {
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ amount: 0.3 }}
+              viewport={{ amount: 0.12 }}
               transition={{ duration: 0.6, delay: 0.5 }}
               className="glass-light hidden rounded-2xl p-6 md:block"
             >
@@ -174,7 +174,7 @@ export function TechSections() {
                   key={s.role}
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ amount: 0.25 }}
+                  viewport={{ amount: 0.1 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   className="border-b border-black/[0.07] py-2.5 md:py-3.5"
                   style={{ paddingLeft: `${i * 4}%` }}
@@ -214,7 +214,7 @@ export function TechSections() {
                 key={r.headline}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ amount: 0.3 }}
+                viewport={{ amount: 0.12 }}
                 transition={{ duration: 0.5, delay: i * 0.12 }}
                 className="glass-light flex flex-col rounded-2xl p-5 md:p-6"
               >
@@ -263,7 +263,7 @@ export function TechSections() {
                   key={m.label}
                   initial={{ opacity: 0, y: 20, scale: 0.96 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ amount: 0.3 }}
+                  viewport={{ amount: 0.12 }}
                   transition={{ duration: 0.45, delay: 0.4 + i * 0.07 }}
                   className="glass-light rounded-xl p-4"
                 >
@@ -303,7 +303,7 @@ export function TechSections() {
                 href={`mailto:${reach.email}?subject=${encodeURIComponent(`[${o.name}] Intro call`)}`}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ amount: 0.3 }}
+                viewport={{ amount: 0.12 }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="pointer-events-auto glass-light group flex flex-col rounded-2xl p-5 transition hover:-translate-y-1 md:p-6"
               >
@@ -342,16 +342,33 @@ export function TechSections() {
           <div className="mt-6 grid gap-6 md:mt-8 md:grid-cols-2 md:gap-14">
             <Poem
               lines={irl.colA}
-              amount={0.25}
+              amount={0.1}
               lineClass="text-base font-medium text-black/65 md:text-xl md:leading-snug"
             />
             <Poem
               lines={irl.colB}
               delay={0.3}
-              amount={0.25}
+              amount={0.1}
               lineClass="text-base font-medium text-black/65 md:text-xl md:leading-snug"
             />
           </div>
+          {/* mobile polaroid strip — the 3D wall lives off-frustum on phones */}
+          <motion.div
+            {...fade}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="pointer-events-auto -mx-6 mt-6 flex gap-3 overflow-x-auto px-6 pb-2 md:hidden"
+          >
+            {irl.photos.map((p, i) => (
+              <img
+                key={p.src}
+                src={p.src}
+                alt={p.caption}
+                className="h-32 w-24 shrink-0 rounded-lg border-4 border-white object-cover shadow-[0_8px_22px_rgba(15,18,25,0.18)]"
+                style={{ transform: `rotate(${i % 2 === 0 ? -2.5 : 2.5}deg)` }}
+                loading="lazy"
+              />
+            ))}
+          </motion.div>
         </div>
       </section>
 

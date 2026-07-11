@@ -19,7 +19,7 @@ export const techZAtPage = (p: number) => CAM_START_Z - TECH_PAGE_DEPTH * p
 const BG = '#f3f1ec'
 
 /** Floating white glass slabs — the gallery's sculpture field. */
-function GlassSlabs() {
+function GlassSlabs({ mobile }: { mobile: boolean }) {
   const count = 64
   const mesh = useRef<THREE.InstancedMesh>(null)
   const dummy = useMemo(() => new THREE.Object3D(), [])
@@ -56,7 +56,7 @@ function GlassSlabs() {
   return (
     <instancedMesh ref={mesh} args={[undefined, undefined, count]} frustumCulled={false}>
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="#ffffff" roughness={0.25} metalness={0.05} transparent opacity={0.55} />
+      <meshStandardMaterial color="#ffffff" roughness={0.25} metalness={0.05} transparent opacity={mobile ? 0.28 : 0.55} />
     </instancedMesh>
   )
 }
@@ -101,16 +101,18 @@ function InkRing({ z, accent }: { z: number; accent?: string }) {
   )
 }
 
-/** Small floating photo print with soft distance fade. */
+/** Small floating photo print with soft distance fade.
+ *  fadeFar/fadeSpan control when it materialises — narrow phone frustums use a
+ *  short window so prints only appear once they sit low on screen, never over text. */
 function PhotoPrint({
-  url, z, x = 0, y = 1.4, w = 2.6, tilt = 0,
-}: { url: string; z: number; x?: number; y?: number; w?: number; tilt?: number }) {
+  url, z, x = 0, y = 1.4, w = 2.6, tilt = 0, fadeFar = 21, fadeSpan = 5,
+}: { url: string; z: number; x?: number; y?: number; w?: number; tilt?: number; fadeFar?: number; fadeSpan?: number }) {
   const ref = useRef<any>(null)
   useFrame(({ camera }) => {
     const dist = Math.abs(camera.position.z - z)
     if (ref.current?.material) {
       ref.current.material.transparent = true
-      ref.current.material.opacity = dist > 21 ? 0 : dist < 1.5 ? 0 : Math.min(1, (21 - dist) / 5)
+      ref.current.material.opacity = dist > fadeFar ? 0 : dist < 1.2 ? 0 : Math.min(1, (fadeFar - dist) / fadeSpan)
     }
   })
   return (
@@ -143,8 +145,11 @@ const PRINT_STOPS: [number, number, number, number][] = [
 ]
 
 export function TechWorld() {
-  const { camera } = useThree()
+  const { camera, size } = useThree()
   const target = useRef(new THREE.Vector3())
+  // Phones have a much narrower frustum — side prints at |x|≈5 never enter it.
+  // On mobile the photos live in the empty bottom band beneath the text instead.
+  const mobile = size.width / size.height < 0.8
 
   // snap to the start of the journey on world entry
   useEffect(() => {
@@ -173,7 +178,7 @@ export function TechWorld() {
       <directionalLight position={[-6, 4, -8]} intensity={0.4} color="#ffe8c7" />
 
       <PorcelainFloor />
-      <GlassSlabs />
+      <GlassSlabs mobile={mobile} />
       <Dust />
 
       {/* one quiet ring per story beat — accent rings on key stops */}
@@ -186,7 +191,14 @@ export function TechWorld() {
       ))}
 
       {/* hero portrait — a modest print, not a billboard */}
-      <PhotoPrint url={techHero.portrait} z={techZAtPage(0) - 8.2} x={4.4} y={1.2} w={3.2} tilt={-0.3} />
+      <PhotoPrint
+        url={techHero.portrait}
+        z={techZAtPage(0) - 8.2}
+        x={mobile ? 1.55 : 4.4}
+        y={mobile ? -1.5 : 1.2}
+        w={mobile ? 1.1 : 3.2}
+        tilt={mobile ? -0.15 : -0.3}
+      />
 
       {/* small prints drifting past through the story */}
       {PRINT_STOPS.map(([page, x, tilt, idx]) => (
@@ -194,29 +206,33 @@ export function TechWorld() {
           key={`${page}-${idx}`}
           url={irl.photos[idx].src}
           z={techZAtPage(page) - 8.6}
-          x={x}
-          y={1.2 + (idx % 2) * 0.5}
-          tilt={tilt}
+          x={mobile ? Math.sign(x) * 1.1 : x}
+          y={mobile ? -1.15 : 1.2 + (idx % 2) * 0.5}
+          w={mobile ? 1.45 : 2.6}
+          tilt={mobile ? tilt * 0.5 : tilt}
+          fadeFar={mobile ? 9 : 21}
+          fadeSpan={mobile ? 2.5 : 5}
         />
       ))}
 
-      {/* IRL wall — edges and crown, leaving the center clear for the poem */}
-      {irl.photos.slice(0, 5).map((p, i) => {
-        const pos = [
-          [6.4, 4.3], [8.4, 1.4], [10.0, 3.7], [11.6, 1.5], [7.3, -0.5],
-        ][i] as [number, number]
-        return (
-          <PhotoPrint
-            key={p.src}
-            url={p.src}
-            z={techZAtPage(IRL_PAGE) - 14.5}
-            x={pos[0]}
-            y={pos[1]}
-            w={3.1}
-            tilt={-pos[0] * 0.04}
-          />
-        )
-      })}
+      {/* IRL wall — desktop only; mobile shows a polaroid strip inside the HTML section */}
+      {!mobile &&
+        irl.photos.slice(0, 5).map((p, i) => {
+          const pos = [
+            [6.4, 4.3], [8.4, 1.4], [10.0, 3.7], [11.6, 1.5], [7.3, -0.5],
+          ][i] as [number, number]
+          return (
+            <PhotoPrint
+              key={p.src}
+              url={p.src}
+              z={techZAtPage(IRL_PAGE) - 14.5}
+              x={pos[0]}
+              y={pos[1]}
+              w={3.1}
+              tilt={-pos[0] * 0.04}
+            />
+          )
+        })}
     </>
   )
 }

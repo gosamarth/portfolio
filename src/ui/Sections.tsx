@@ -6,7 +6,7 @@ import { CarHud } from './CarHud'
 const fade = {
   initial: { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { amount: 0.4 },
+  viewport: { amount: 0.12 },
 }
 
 /**

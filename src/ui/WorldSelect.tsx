@@ -163,7 +163,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
               production, and the business results to prove it.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {['The AI story', 'The climb: SDE → Director', 'Results & receipts', 'Work with me'].map((c) => (
+              {['⚔ Guarded by The Trials', 'The AI story', 'The climb: SDE → Director', 'Work with me'].map((c) => (
                 <span key={c} className="rounded-full border border-black/15 px-3 py-1 text-[11px] text-black/60">
                   {c}
                 </span>
@@ -179,7 +179,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
                   : 'border-emerald-700/70 text-emerald-700'
               }`}
             >
-              Enter the portfolio →
+              Face the trials →
               <kbd className="rounded border border-current px-1.5 py-0.5 font-mono text-[10px]">T</kbd>
             </span>
           </div>
