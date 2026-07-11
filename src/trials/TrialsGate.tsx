@@ -7,7 +7,7 @@ import {
 } from './trials'
 
 // ─────────────────────────────────────────────────────────────
-//  THE TRIALS — a five-stage arcade gauntlet guarding the
+//  THE TRIALS, a five-stage arcade gauntlet guarding the
 //  portfolio. Full-screen, neon-on-carbon, 2026 pro-gamer.
 // ─────────────────────────────────────────────────────────────
 
@@ -39,7 +39,9 @@ const CHIPS: Record<Path | 'none', { label: string; at: Stage[] }[]> = {
   ],
   founder: [
     { label: 'REG', at: ['register'] },
-    { label: 'PASS', at: ['founder'] },
+    { label: 'BRF', at: ['founder'] },
+    { label: 'DD', at: ['detective'] },
+    { label: 'RXN', at: ['reaction'] },
   ],
 }
 
@@ -167,8 +169,8 @@ function IntroStep({ onAccept, onCheat }: { onAccept: () => void; onCheat: () =>
         The<br />Trials
       </h1>
       <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-white/55 md:text-base">
-        The portfolio doesn't open for tourists. The trials stand between you and the story —
-        pick your path: engineer, detective, or founder. Solve it and the word is yours.
+        The portfolio doesn't open for tourists. The trials stand between you and the story.
+        Pick your path: engineer, detective, or founder. Solve it and the word is yours.
       </p>
       <NeonButton className="mt-8" onClick={onAccept}>
         I accept →
@@ -234,7 +236,7 @@ function RegisterStep({ onDone }: { onDone: (p: Player) => void }) {
       <TrialTitle
         index="Player Registration"
         title="Insert Coin"
-        sub="Five trials guard the portfolio. Register your player tag — champions get remembered, quitters get emailed."
+        sub="Five trials guard the portfolio. Register your player tag, champions get remembered, quitters get emailed."
       />
       <div className="mt-8 flex w-full flex-col gap-3">
         <input className={field} placeholder="PLAYER NAME" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
@@ -246,7 +248,7 @@ function RegisterStep({ onDone }: { onDone: (p: Player) => void }) {
         Enter the arena →
       </NeonButton>
       <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-white/25">
-        Contact goes to Samarth only. No spam — maybe one legendary email.
+        Contact goes to Samarth only. No spam, maybe one legendary email.
       </p>
     </motion.div>
   )
@@ -262,12 +264,12 @@ function PathStep({ onPick }: { onPick: (p: Path) => void }) {
     },
     {
       key: 'detective', icon: '◎', title: 'The Detective',
-      blurb: 'No code needed. Three clues about Samarth — every answer hides in these two worlds.',
+      blurb: 'No code needed. Three clues about Samarth, every answer hides in these two worlds.',
       tone: 'hover:border-emerald-400 hover:shadow-[0_0_30px_rgba(52,211,153,0.25)]',
     },
     {
       key: 'founder', icon: '▲', title: 'The Founder Pass',
-      blurb: "Skip the games. You're here to build something — the door respects that.",
+      blurb: 'The business route. Pitch your build, run quick due diligence, prove your reflexes. Fastest lane to a real conversation.',
       tone: 'hover:border-amber-400 hover:shadow-[0_0_30px_rgba(251,191,36,0.25)]',
     },
   ]
@@ -306,7 +308,7 @@ const CLUES = [
     hint: 'The garage door on the home screen brags about it.',
   },
   {
-    q: 'Which machine parks at the very END of the garage — the origin story?',
+    q: 'Which machine parks at the very END of the garage, the origin story?',
     options: ['2026 Mercedes C300 AMG', 'BMW 520d', '2011 VW Vento IPL', 'Mahindra XEV 9e'],
     answer: '2011 VW Vento IPL',
     hint: 'Newest first, oldest last. The garage intro says the origin story parks at the end.',
@@ -319,7 +321,7 @@ const CLUES = [
   },
 ]
 
-function DetectiveStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) => void; onSkip: () => void; skippable: boolean }) {
+function DetectiveStep({ onDone, onSkip, skippable, founder }: { onDone: (s: TrialStats) => void; onSkip: () => void; skippable: boolean; founder?: boolean }) {
   const [idx, setIdx] = useState(0)
   const [misses, setMisses] = useState(0)
   const [shake, setShake] = useState(0)
@@ -342,9 +344,13 @@ function DetectiveStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) 
   return (
     <motion.div {...stepAnim} className="flex w-full max-w-2xl flex-col items-center px-6">
       <TrialTitle
-        index={`The Detective · Clue ${idx + 1}/${CLUES.length}`}
-        title="Read the Worlds"
-        sub="Every answer is on this website — the garage is unguarded, go look if you must. Esc retreats safely; your registration is remembered."
+        index={founder ? `Due Diligence · ${idx + 1}/${CLUES.length}` : `The Detective · Clue ${idx + 1}/${CLUES.length}`}
+        title={founder ? 'Know Your Partner' : 'Read the Worlds'}
+        sub={
+          founder
+            ? "You'd never sign a term sheet unread. Every answer is on this website, and the garage is unguarded. Esc retreats safely; your registration is remembered."
+            : 'Every answer is on this website. The garage is unguarded, go look if you must. Esc retreats safely; your registration is remembered.'
+        }
       />
       <motion.div
         key={`${idx}-${shake}`}
@@ -380,30 +386,49 @@ function DetectiveStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) 
   )
 }
 
-// 3-alt ── THE FOUNDER PASS ----------------------------------------------------
+// 3-alt ── THE FOUNDER BRIEF ---------------------------------------------------
 function FounderStep({ player, onDone }: { player: Player; onDone: (s: TrialStats) => void }) {
   const [building, setBuilding] = useState('')
+  const [company, setCompany] = useState('')
+  const [err, setErr] = useState('')
   const go = () => {
+    const brief = building.trim()
+    if (brief.length < 20) {
+      sfxFail()
+      setErr('Give the brief at least a real sentence. Investors ask harder questions.')
+      return
+    }
     sfxPass()
-    submitLead(player, 'founder-pass', { path: 'founder', building: building.trim().slice(0, 400) })
-    onDone({ path: 'founder', building: building.trim().slice(0, 400) })
+    const stats: TrialStats = {
+      path: 'founder',
+      building: `${brief.slice(0, 400)}${company.trim() ? ` [${company.trim().slice(0, 80)}]` : ''}`,
+    }
+    submitLead(player, 'founder-pass', stats)
+    onDone(stats)
   }
   return (
     <motion.div {...stepAnim} className="flex w-full max-w-lg flex-col items-center px-6">
       <TrialTitle
-        index="The Founder Pass"
-        title="No Games"
-        sub="Respect. One optional question, then the door opens — Samarth reads every answer personally."
+        index="The Founder Pass · The Brief"
+        title="Pitch First"
+        sub="No free rides, even in a suit. One sharp brief, a little due diligence, one reflex check. Samarth reads every brief personally."
       />
       <textarea
         value={building}
         onChange={(e) => setBuilding(e.target.value)}
         rows={3}
-        placeholder="What are you building? (optional — but it gets you a sharper first call)"
+        placeholder="What are you building, and what's in the way? (required)"
         className="mt-8 w-full resize-none rounded-xl border border-white/15 bg-white/[0.04] px-5 py-4 font-mono text-sm text-white placeholder-white/25 outline-none transition focus:border-amber-400"
       />
+      <input
+        value={company}
+        onChange={(e) => setCompany(e.target.value)}
+        placeholder="Company / role (optional)"
+        className="mt-3 w-full rounded-xl border border-white/15 bg-white/[0.04] px-5 py-3 font-mono text-sm text-white placeholder-white/25 outline-none transition focus:border-amber-400"
+      />
+      {err && <p className="mt-3 text-center font-mono text-xs uppercase tracking-widest text-rose-400">{err}</p>}
       <NeonButton tone="amber" className="mt-6" onClick={go}>
-        Open the door →
+        Submit the brief →
       </NeonButton>
     </motion.div>
   )
@@ -498,7 +523,7 @@ function OverdriveStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) 
       </div>
       <p className="mt-2 font-mono text-sm tabular-nums text-white/40">{left.toFixed(1)}s</p>
       {phase === 'fail' && (
-        <FailBar note="Engine stalled — too slow" onRetry={reset} onSkip={onSkip} showSkip={skippable && fails >= 1} />
+        <FailBar note="Engine stalled, too slow" onRetry={reset} onSkip={onSkip} showSkip={skippable && fails >= 1} />
       )}
       {phase === 'idle' && (
         <p className="mt-6 animate-pulse font-mono text-xs uppercase tracking-[0.4em] text-accent">
@@ -572,7 +597,7 @@ function TypingStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) => 
       <TrialTitle
         index="Trial 02 · WPM Sprint"
         title="Type or Retire"
-        sub={`Reproduce the line below in under ${TIME} seconds. Every character counts — literally.`}
+        sub={`Reproduce the line below in under ${TIME} seconds. Every character counts, literally.`}
       />
       <div
         className="mt-8 w-full cursor-text rounded-2xl border border-white/12 bg-white/[0.03] p-6 text-center font-mono text-lg leading-relaxed md:text-2xl"
@@ -601,7 +626,7 @@ function TypingStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) => 
         value={typed}
         onChange={(e) => onChange(e.target.value)}
         className="mt-4 w-full max-w-md rounded-xl border border-white/15 bg-white/[0.04] px-5 py-3 text-center font-mono text-sm text-white outline-none focus:border-accent"
-        placeholder="type here — go"
+        placeholder="type here, go"
         autoCapitalize="none"
         autoCorrect="off"
         spellCheck={false}
@@ -614,7 +639,7 @@ function TypingStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) => 
       </div>
       <p className="mt-2 font-mono text-sm tabular-nums text-white/40">{left.toFixed(1)}s</p>
       {phase === 'fail' && (
-        <FailBar note="Out of time — fingers too polite" onRetry={reset} onSkip={onSkip} showSkip={skippable && fails >= 1} />
+        <FailBar note="Out of time, fingers too polite" onRetry={reset} onSkip={onSkip} showSkip={skippable && fails >= 1} />
       )}
     </motion.div>
   )
@@ -629,7 +654,7 @@ function InspectStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) =>
   const [hint, setHint] = useState(false)
 
   useEffect(() => {
-    // the trial itself whispers into the console — devs will hear it
+    // the trial itself whispers into the console, devs will hear it
     console.log(
       '%cTRIAL 03 // THE HIDDEN WORD',
       'color:#6ee7ff;font-size:16px;font-weight:bold;font-family:monospace',
@@ -709,7 +734,7 @@ function InspectStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) =>
       {hint && (
         <p className="mt-4 max-w-sm text-center font-mono text-xs leading-relaxed text-white/45">
           {touch
-            ? 'The cipher is base64. Any decoder — or a sharp mind — will read it.'
+            ? 'The cipher is base64. Any decoder, or a sharp mind, will read it.'
             : 'Right-click → Inspect. In the <body> lives an element whose TAG NAME is the word itself. It starts with the same letters as this site\'s owner.'}
         </p>
       )}
@@ -873,13 +898,11 @@ function VictoryStep({ player, stats, onEnter }: { player: Player; stats: TrialS
   useEffect(() => {
     sfxVictory()
     markTrialsCleared()
-    // the founder pass already reported itself from its own step
-    if (stats.path !== 'founder') submitLead(player, 'victory', stats)
+    submitLead(player, 'victory', stats)
   }, [player, stats])
 
   const title = rankTitle(stats)
-  const founder = stats.path === 'founder'
-  const shareText = `I cleared THE TRIALS on Samarth's portfolio — rank: ${title}${
+  const shareText = `I cleared THE TRIALS on Samarth's portfolio, rank: ${title}${
     stats.reactionMs ? `, reaction ${stats.reactionMs}ms` : ''
   }${stats.wpm ? `, ${stats.wpm} WPM` : ''}. Think you're faster?`
 
@@ -930,14 +953,12 @@ function VictoryStep({ player, stats, onEnter }: { player: Player; stats: TrialS
         {player.name}, the gate is open. Official rank:{' '}
         <span className="font-semibold text-accent">{title}</span>
       </p>
-      {!founder && (
-        <div className="mt-7 grid w-full max-w-md grid-cols-3 gap-3">
-          <Stat label="Taps /s" value={stats.tapsPerSec ? `${stats.tapsPerSec}` : '—'} />
-          <Stat label="WPM" value={stats.wpm ? `${stats.wpm}` : '—'} />
-          <Stat label="Reaction" value={stats.reactionMs ? `${stats.reactionMs}ms` : '—'} />
-        </div>
-      )}
-      {/* the champion's cheat — revealed only to those who made it through */}
+      <div className="mt-7 grid w-full max-w-md grid-cols-3 gap-3">
+        <Stat label="Taps /s" value={stats.tapsPerSec ? `${stats.tapsPerSec}` : '·'} />
+        <Stat label="WPM" value={stats.wpm ? `${stats.wpm}` : '·'} />
+        <Stat label="Reaction" value={stats.reactionMs ? `${stats.reactionMs}ms` : '·'} />
+      </div>
+      {/* the champion's cheat, revealed only to those who made it through */}
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
@@ -948,17 +969,15 @@ function VictoryStep({ player, stats, onEnter }: { player: Player; stats: TrialS
         <p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-white">{CHEAT_CODE}</p>
         <p className="mt-2 text-xs leading-relaxed text-white/50">
           Next visit, skip everything: just <span className="text-white/80">type it anywhere</span> on
-          the site — no box, no menu, like a proper cheat code. On a phone, tap{' '}
+          the site, no box, no menu, like a proper cheat code. On a phone, tap{' '}
           <span className="text-white/80">"🗝 I know the code"</span> at the gate and whisper it.
         </p>
       </motion.div>
       <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
         <NeonButton onClick={onEnter}>Enter the portfolio →</NeonButton>
-        {!founder && (
-          <NeonButton tone="ghost" onClick={share}>
-            {copied ? 'Copied — go brag' : 'Challenge a friend'}
-          </NeonButton>
-        )}
+        <NeonButton tone="ghost" onClick={share}>
+          {copied ? 'Copied. Go brag' : 'Challenge a friend'}
+        </NeonButton>
       </div>
     </motion.div>
   )
@@ -973,7 +992,7 @@ const NEXT: Record<Exclude<Stage, 'victory'>, Stage> = {
   typing: 'inspect',
   inspect: 'reaction',
   detective: 'reaction',
-  founder: 'victory',
+  founder: 'detective',
   reaction: 'victory',
 }
 
@@ -997,7 +1016,7 @@ export function TrialsGate({ onVictory, onCheat, onClose }: { onVictory: () => v
       ...(extra ?? {}),
       ...(skipped ? { skips: (stats.skips ?? 0) + 1 } : {}),
     }
-    if (from === 'reaction' || from === 'founder') {
+    if (from === 'reaction') {
       merged.totalSec = Math.round((performance.now() - startRef.current) / 100) / 10
     }
     setStats(merged)
@@ -1081,6 +1100,7 @@ export function TrialsGate({ onVictory, onCheat, onClose }: { onVictory: () => v
           {stage === 'detective' && (
             <DetectiveStep
               key="clu"
+              founder={path === 'founder'}
               onDone={(s) => advance('detective', s)}
               onSkip={() => advance('detective', {}, true)}
               skippable

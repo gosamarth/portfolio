@@ -6,7 +6,7 @@ import { ExperienceTicker } from './ExperienceTicker'
 import type { WorldMode } from '../world'
 
 // ─────────────────────────────────────────────────────────────
-//  THE SPLIT v2 — two unmistakable doors. A title strip on top,
+//  THE SPLIT v2, two unmistakable doors. A title strip on top,
 //  then two giant framed panels with a real gutter between them
 //  and a big ENTER button in each. Hover still swells a side;
 //  the garage door still plays the turntable.
@@ -34,7 +34,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
 
   return (
     <div className="fixed inset-0 z-30 flex flex-col bg-[#0a0b0f]">
-      {/* ── THE TWO DOORS — full bleed, thin seam ──────────── */}
+      {/* ── THE TWO DOORS, full bleed, thin seam ──────────── */}
       <div className="flex min-h-0 flex-1 flex-col gap-1.5 md:flex-row md:gap-2">
         {/* DARK DOOR · THE GARAGE */}
         <motion.button
@@ -84,7 +84,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
           <div className="relative flex h-full flex-col items-start justify-end p-5 md:p-9">
             <h2 className="font-display text-4xl font-bold text-white md:text-6xl">The Garage</h2>
             <p className="mt-2 max-w-sm text-sm text-white/70 md:text-base">
-              The machines I've owned, rendered like a game — and the story behind every set of keys.
+              The machines I've owned, rendered like a game, and the story behind every set of keys.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {['8 machines', 'Spinning turntables', 'Neon showroom'].map((c) => (
@@ -117,7 +117,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
           onMouseEnter={() => setHover('tech')}
           onMouseLeave={() => setHover(null)}
           onClick={() => enter('tech')}
-          aria-label="Enter the portfolio — Samarth Builds"
+          aria-label="Enter the portfolio. Samarth Builds"
         >
           <div className="absolute inset-0 bg-[#f3f1ec]" />
           <div
@@ -159,7 +159,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
               {profile.role} · AI Solutions Architect
             </p>
             <p className="mt-2 max-w-md text-sm text-black/60 md:text-base">
-              The pitch, in person — a decade of engineering leadership, AI systems that survive
+              The pitch, in person, a decade of engineering leadership, AI systems that survive
               production, and the business results to prove it.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -186,7 +186,7 @@ export function WorldSelect({ onSelect }: { onSelect: (m: WorldMode) => void }) 
         </motion.button>
       </div>
 
-      {/* ── SEAM BADGE — one builder, two worlds ───────────── */}
+      {/* ── SEAM BADGE, one builder, two worlds ───────────── */}
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 md:block"
         style={{ opacity: hover || leaving ? 0 : 1 }}

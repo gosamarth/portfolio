@@ -17,7 +17,7 @@ export function Sections() {
   return (
     <div className="w-screen">
       {/* HERO */}
-      <section className="flex h-screen overflow-hidden flex-col justify-center px-6 md:px-20">
+      <section className="flex h-page overflow-hidden flex-col justify-center px-6 md:px-20">
         <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-4">
           {profile.role} · {profile.location}
         </motion.p>
@@ -44,12 +44,12 @@ export function Sections() {
           className="mt-10 flex items-center gap-3 text-sm text-white/50"
         >
           <span className="h-px w-8 bg-white/30" />
-          Hit the throttle — scroll to launch
+          Hit the throttle, scroll to launch
         </motion.div>
       </section>
 
       {/* ABOUT */}
-      <section className="flex h-screen overflow-hidden items-center px-6 md:px-20">
+      <section className="flex h-page overflow-hidden items-center px-6 md:px-20">
         <motion.div {...fade} transition={{ duration: 0.55 }} className="glass max-w-xl rounded-2xl p-8 md:p-10">
           <p className="eyebrow mb-3">{about.heading}</p>
           {about.body.map((p, i) => (
@@ -61,7 +61,7 @@ export function Sections() {
       </section>
 
       {/* GARAGE INTRO */}
-      <section className="flex h-screen overflow-hidden flex-col items-center justify-center px-6 text-center">
+      <section className="flex h-page overflow-hidden flex-col items-center justify-center px-6 text-center">
         <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-5">
           Now entering
         </motion.p>
@@ -81,7 +81,7 @@ export function Sections() {
           className="mt-6 max-w-md text-white/60"
         >
           {cars.length} machines, {cars[0].year} counting back to{' '}
-          {cars[cars.length - 1].year}. Newest first — the origin story parks at the end. Some
+          {cars[cars.length - 1].year}. Newest first, the origin story parks at the end. Some
           still here. Some passed on. All loved.
         </motion.p>
         <motion.div
@@ -100,7 +100,7 @@ export function Sections() {
       ))}
 
       {/* WORK */}
-      <section className="flex h-screen overflow-hidden items-center px-6 md:px-20">
+      <section className="flex h-page overflow-hidden items-center px-6 md:px-20">
         <div className="w-full max-w-2xl">
           <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-6">
             Built to prove it
@@ -133,7 +133,7 @@ export function Sections() {
       </section>
 
       {/* SKILLS */}
-      <section className="flex h-screen overflow-hidden items-center px-6 md:px-20">
+      <section className="flex h-page overflow-hidden items-center px-6 md:px-20">
         <div className="w-full">
           <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-6">
             {skills.heading}
@@ -161,7 +161,7 @@ export function Sections() {
       </section>
 
       {/* CONTACT */}
-      <section className="flex h-screen overflow-hidden flex-col justify-center px-6 md:px-20">
+      <section className="flex h-page overflow-hidden flex-col justify-center px-6 md:px-20">
         <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-4">
           Contact
         </motion.p>
@@ -195,7 +195,7 @@ export function Sections() {
           ))}
         </motion.div>
         <motion.p {...fade} transition={{ duration: 0.6, delay: 0.26 }} className="mt-12 text-xs text-white/30">
-          Designed & engineered by {profile.name}. Rendered live in WebGL — react-three-fiber,
+          Designed & engineered by {profile.name}. Rendered live in WebGL, react-three-fiber,
           AI-generated garage, zero templates.
         </motion.p>
       </section>

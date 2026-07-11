@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  THE TRIALS — shared state, scoring, persistence, lead wire.
+//  THE TRIALS, shared state, scoring, persistence, lead wire.
 //  The portfolio world is guarded. Solve the gauntlet, or pay
 //  the toll in contact details. Either way, Samarth wins.
 // ─────────────────────────────────────────────────────────────
@@ -7,7 +7,7 @@
 export const TRIALS_CLEARED_KEY = 'trials.cleared.v1'
 export const TRIALS_PLAYER_KEY = 'trials.player.v1'
 export const MAGIC_WORD = 'samakadabra'
-// The champion's cheat — earned on victory, whispered on return visits.
+// The champion's cheat, earned on victory, whispered on return visits.
 export const CHEAT_CODE = 'knockknock'
 
 export type Player = { name: string; email: string; phone: string }
@@ -37,7 +37,7 @@ export function markTrialsCleared() {
   try {
     localStorage.setItem(TRIALS_CLEARED_KEY, '1')
   } catch {
-    /* private mode — the gate just asks again next time */
+    /* private mode, the gate just asks again next time */
   }
 }
 
@@ -58,7 +58,7 @@ export function loadPlayer(): Player | null {
   }
 }
 
-/** Fire-and-forget lead post — the SWA function writes it to Table Storage. */
+/** Fire-and-forget lead post, the SWA function writes it to Table Storage. */
 export function submitLead(player: Player, stage: 'register' | 'victory' | 'founder-pass' | 'cheat-return', stats?: TrialStats) {
   try {
     void fetch('/api/lead', {
@@ -68,11 +68,11 @@ export function submitLead(player: Player, stage: 'register' | 'victory' | 'foun
       keepalive: true,
     }).catch(() => {})
   } catch {
-    /* offline / dev — never block the game */
+    /* offline / dev, never block the game */
   }
 }
 
-/** Rank title from the final scorecard — the shareable flex. */
+/** Rank title from the final scorecard, the shareable flex. */
 export function rankTitle(s: TrialStats): string {
   if (s.path === 'founder') return 'Corner Office'
   if (s.skips && s.skips > 1) return 'Diplomatic Immunity'
@@ -83,7 +83,7 @@ export function rankTitle(s: TrialStats): string {
   return 'Sunday Driver'
 }
 
-// ── tiny synth SFX — no assets, WebAudio only ────────────────
+// ── tiny synth SFX, no assets, WebAudio only ────────────────
 let audioCtx: AudioContext | null = null
 let muted = false
 

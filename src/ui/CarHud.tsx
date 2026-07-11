@@ -24,8 +24,8 @@ function Stat({ label, value }: { label: string; value?: string }) {
 export function CarHud({ car, index }: { car: Car; index: number }) {
   const owned = car.status === 'owned'
   return (
-    <section className="relative flex h-screen overflow-hidden flex-col justify-end px-5 pb-10 md:px-16 md:pb-14">
-      {/* top row — index + status stamp */}
+    <section className="relative flex h-page overflow-hidden flex-col justify-end px-5 pb-10 md:px-16 md:pb-14">
+      {/* top row, index + status stamp */}
       <div className="pointer-events-none absolute inset-x-5 top-20 flex items-start justify-between md:inset-x-16 md:top-24">
         <motion.div {...fade} transition={{ duration: 0.5 }}>
           <span className="font-display text-5xl font-bold text-white/15 md:text-7xl">

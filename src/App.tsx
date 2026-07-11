@@ -12,6 +12,8 @@ import { TECH_PAGES } from './data/tech'
 import { JOURNEY_HTML_ID, handleJourneyScroll, setJourneyPages, scrollState } from './scrollBridge'
 import { RevCounter } from './ui/RevCounter'
 import { IgnitionLoader } from './ui/IgnitionLoader'
+import { ProgressRail } from './ui/ProgressRail'
+import { Toaster, toast } from './ui/Toaster'
 import { TrialsGate } from './trials/TrialsGate'
 import { CheatSplash } from './trials/CheatSplash'
 import { CHEAT_CODE, loadPlayer, markTrialsCleared, submitLead, trialsCleared } from './trials/trials'
@@ -77,6 +79,36 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [mode, trialsOpen, cheating])
 
+  // the site talks back: playful once-per-session toasts on milestones
+  useEffect(() => {
+    if (mode === 'garage') {
+      toast('Warming the tyres. The tunnel likes a heavy scroll.', { once: 'garage-enter', delay: 3800 })
+      let prev = scrollState.offset
+      const iv = setInterval(() => {
+        const o = scrollState.offset
+        if (o - prev > 0.075) toast('Easy on the throttle 🏁', { once: 'throttle' })
+        if (o > 0.93) toast('That Vento at the end? Where it all began.', { once: 'vento' })
+        prev = o
+      }, 700)
+      return () => clearInterval(iv)
+    }
+    if (mode === 'tech') {
+      toast('No tourists in here. Make yourself at home.', { once: 'tech-enter', light: true, delay: 3600 })
+      const iv = setInterval(() => {
+        if (scrollState.offset > 0.56)
+          toast('Serious scroller. The open channel waits on the last page.', { once: 'tech-mid', light: true })
+      }, 900)
+      return () => clearInterval(iv)
+    }
+    if (mode === 'select' && !trialsOpen) {
+      const t = setTimeout(
+        () => toast("The doors don't bite. G for the garage, T for the trials.", { once: 'select-idle' }),
+        26000,
+      )
+      return () => clearTimeout(t)
+    }
+  }, [mode, trialsOpen])
+
   // the champion's cheat — type "knockknock" anywhere, no input box needed
   useEffect(() => {
     let buffer = ''
@@ -116,7 +148,7 @@ export default function App() {
           className="absolute inset-0 z-10 overflow-y-auto"
           style={{ overscrollBehavior: 'none' }}
         >
-          <div style={{ height: `${pages * 100}vh` }} />
+          <div className="journey-spacer" style={{ ['--journey-pages' as string]: pages }} />
           <div id={JOURNEY_HTML_ID} className="pointer-events-none fixed inset-x-0 top-0" style={{ willChange: 'transform' }}>
             {mode === 'garage' ? <Sections /> : <TechSections />}
           </div>
@@ -148,6 +180,9 @@ export default function App() {
       {/* Scroll-speed tachometer HUD (garage only — the deck has its own vibe) */}
       {mode === 'garage' && <RevCounter />}
 
+      {/* Journey map rail (portfolio only, desktop) */}
+      {mode === 'tech' && <ProgressRail />}
+
       {/* World selection screen */}
       {mode === 'select' && <WorldSelect onSelect={requestMode} />}
 
@@ -169,9 +204,13 @@ export default function App() {
           onDone={() => {
             setCheating(false)
             setMode('tech')
+            toast('Knock knock. Good to have you back, champion.', { once: 'cheat-back', light: true, delay: 1400 })
           }}
         />
       )}
+
+      {/* Conversational toasts */}
+      <Toaster />
 
       {/* Engine-start loading screen — one ignition per world entry */}
       {inWorld && <IgnitionLoader key={mode} />}

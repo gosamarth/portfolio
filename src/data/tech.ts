@@ -221,6 +221,63 @@ export const chapters: Chapter[] = [
   },
 ]
 
+// ── WHERE I PLUG IN ──────────────────────────────────────────
+export const helpGrid = {
+  eyebrow: 'Where I plug in',
+  title: 'Find your lane.',
+  line: 'Six ways companies use me. If yours is on this wall, the door on the last page is for you.',
+  items: [
+    {
+      icon: '01',
+      title: 'Zero-to-One Builds',
+      who: 'Founders with a vision and no engine yet',
+      desc: 'From napkin to production in 30 to 90 days. Product architecture, the first build, and the discipline that keeps v1 from becoming legacy.',
+      chips: ['MVP → Production', 'Azure', '.NET · React · Angular'],
+      accent: '#059669',
+    },
+    {
+      icon: '02',
+      title: 'Scaling Engineering Teams',
+      who: 'CEOs whose team stopped shipping as it grew',
+      desc: 'Org design, hiring bars, delivery rhythm and the standards that let ten engineers move like thirty. People problems, solved like systems.',
+      chips: ['Org design', 'Hiring bars', 'Delivery cadence'],
+      accent: '#0284c7',
+    },
+    {
+      icon: '03',
+      title: 'AI & Autonomous SDLC',
+      who: 'Leaders who want AI in the loop, not on a slide',
+      desc: 'Agent fleets inside your delivery pipeline. Requirements to release with human judgment at the gates and every AI decision auditable.',
+      chips: ['Agent fleets', 'Governed gates', '6-week cycles → 1'],
+      accent: '#7c3aed',
+    },
+    {
+      icon: '04',
+      title: 'Regulated & Compliance-Grade Systems',
+      who: 'Products where legal reads the architecture diagram',
+      desc: 'Healthcare, fintech and HR platforms built to pass the audit, not fear it. Ship fast without scaring your compliance team.',
+      chips: ['HIPAA', 'GDPR', 'SOC 2', 'PCI DSS'],
+      accent: '#d97706',
+    },
+    {
+      icon: '05',
+      title: 'Cloud Architecture & Cost',
+      who: 'CFOs staring at a cloud bill that grew faster than revenue',
+      desc: 'Azure-first architecture reviews, reliability engineering and FinOps. Uptime held at 99.95% while the bill dropped 35%.',
+      chips: ['Azure · AKS', 'SLOs & DR', 'FinOps'],
+      accent: '#0369a1',
+    },
+    {
+      icon: '06',
+      title: 'Fractional Engineering Leadership',
+      who: 'Boards that need a Director without the full-time seat',
+      desc: 'Roadmaps, vendor calls, architecture decisions and board-ready reporting. Senior leadership firepower, rented by the sprint.',
+      chips: ['Advisory', 'Roadmaps', 'Board-ready'],
+      accent: '#be185d',
+    },
+  ],
+}
+
 // ── THE CLIMB ────────────────────────────────────────────────
 export const journey = {
   eyebrow: 'The climb',
@@ -290,7 +347,7 @@ export const receipts = {
       headline: 'Document operations accelerated',
       lines: [
         'A claims process was drowning a human team.',
-        'The real problem was not people — people were doing machine work.',
+        'The real problem was not people. People were doing machine work.',
         'Built a document intelligence pipeline where humans reviewed only the exceptions.',
       ],
       result: ['Throughput up 8×.', 'Error rate down.'],
@@ -350,7 +407,7 @@ export const offerings = {
       name: 'AI Strategy Sprint',
       duration: '2 weeks',
       audience: 'For leaders who know AI matters, but do not yet know where it pays.',
-      desc: 'We look at your business, your workflows, your cost centers and your current systems. Then we separate noise from leverage. You leave with a map of where AI should enter your business, what to build, what to buy, what to avoid — and what your board can actually approve.',
+      desc: 'We look at your business, your workflows, your cost centers and your current systems. Then we separate noise from leverage. You leave with a map of where AI should enter your business, what to build, what to buy, what to avoid, and what your board can actually approve.',
       deliverable: 'Executive roadmap and architecture blueprint',
       accent: '#059669',
     },
@@ -359,7 +416,7 @@ export const offerings = {
       name: 'Autonomous SDLC Pilot',
       duration: '30–60 days',
       audience: 'For engineering leaders who want proof before scale.',
-      desc: 'One team. One workflow. One governed delivery pipeline. Agent driven execution with human approval, traceability, and before/after velocity measurement. The goal is not to talk about 10× — it is to prove what changes when the system is built correctly.',
+      desc: 'One team. One workflow. One governed delivery pipeline. Agent driven execution with human approval, traceability, and before/after velocity measurement. The goal is not to talk about 10×. It is to prove what changes when the system is built correctly.',
       deliverable: 'Live pipeline and before/after velocity report',
       accent: '#0284c7',
     },
@@ -368,7 +425,7 @@ export const offerings = {
       name: 'Production AI Build',
       duration: '30–90 days',
       audience: 'For companies ready to ship.',
-      desc: 'A RAG assistant. A document pipeline. An agent workflow. A governed automation layer. Built on Azure, designed for production, delivered with runbooks, evaluation suites and operational guardrails. Not a prototype — a system your business can use.',
+      desc: 'A RAG assistant. A document pipeline. An agent workflow. A governed automation layer. Built on Azure, designed for production, delivered with runbooks, evaluation suites and operational guardrails. Not a prototype. A system your business can use.',
       deliverable: 'Deployed system, runbook and evaluation suite',
       accent: '#7c3aed',
     },
@@ -433,7 +490,7 @@ export const techContact = {
 }
 
 // Tech journey page order:
-// 0 hero · 1 moment · 2 arrival · 3–7 chapters · 8 climb · 9 receipts
-// 10 console · 11 offerings · 12 off-duty · 13 contact
-export const TECH_PAGES = 14
-export const IRL_PAGE = 12
+// 0 hero · 1 moment · 2 arrival · 3–7 chapters · 8 where-i-plug-in · 9 climb
+// 10 receipts · 11 console · 12 offerings · 13 off-duty · 14 contact
+export const TECH_PAGES = 15
+export const IRL_PAGE = 13

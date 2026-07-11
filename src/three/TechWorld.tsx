@@ -186,7 +186,7 @@ export function TechWorld() {
         <InkRing
           key={page}
           z={techZAtPage(page) - 9}
-          accent={page === 8 ? '#d97706' : page === 11 ? '#059669' : undefined}
+          accent={page === 8 ? '#be185d' : page === 9 ? '#d97706' : page === 12 ? '#059669' : undefined}
         />
       ))}
 

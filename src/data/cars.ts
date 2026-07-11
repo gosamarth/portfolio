@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  THE GARAGE — Samarth's cars, oldest → newest.
+//  THE GARAGE. Samarth's cars, oldest → newest.
 //  Specs are India-market, fetched from public sources.
 //  Drop the matching render at /public/cars/<slug>.jpg
 //  (optional 360° turntable loop at /public/cars/<slug>.mp4).
@@ -55,7 +55,7 @@ export const cars: Car[] = [
     drivetrain: '5-speed manual · FWD',
     zeroToHundred: undefined,
     topSpeed: undefined,
-    story: 'Where it all began — a cricket-season special edition and my first set of keys.',
+    story: 'Where it all began, a cricket-season special edition and my first set of keys.',
     fact: 'A limited IPL-branded edition: badged sills, leatherette seats, touchscreen nav, and a cricket kit gifted to every buyer.',
     image: '/cars/2011-vw-vento-ipl.jpg',
   },
@@ -79,8 +79,8 @@ export const cars: Car[] = [
     drivetrain: '6-speed auto · FWD',
     zeroToHundred: '~11.0 s',
     topSpeed: undefined,
-    story: 'Fully-loaded and fluidic — the sedan that made features feel premium.',
-    fact: 'The all-new 5th-gen Verna was a segment benchmark — among the first here with a ventilated driver seat and wireless charging.',
+    story: 'Fully-loaded and fluidic, the sedan that made features feel premium.',
+    fact: 'The all-new 5th-gen Verna was a segment benchmark, among the first here with a ventilated driver seat and wireless charging.',
     image: '/cars/2017-hyundai-verna-sxo.jpg',
   },
   {
@@ -103,7 +103,7 @@ export const cars: Car[] = [
     drivetrain: '7-step CVT · FWD',
     zeroToHundred: '11.5 s',
     topSpeed: undefined,
-    story: 'The tenth-gen icon, back in India — low, wide, and unmistakable.',
+    story: 'The tenth-gen icon, back in India, low, wide, and unmistakable.',
     fact: 'Marked Honda’s return to the D-segment after a five-year gap, with that dramatic coupe-like silhouette.',
     image: '/cars/2020-honda-civic-zx.jpg',
   },
@@ -127,7 +127,7 @@ export const cars: Car[] = [
     drivetrain: '8-speed Steptronic · RWD',
     zeroToHundred: '~7.7 s',
     topSpeed: '~227 km/h',
-    story: 'The executive express — effortless torque, rear-wheel drive, still in the garage.',
+    story: 'The executive express, effortless torque, rear-wheel drive, still in the garage.',
     fact: '400 Nm from a 2.0 diesel and an 8-speed Steptronic make it deceptively quick for its size.',
     image: '/cars/2017-bmw-520d.jpg',
     video: '/cars/2017-bmw-520d.mp4',
@@ -152,7 +152,7 @@ export const cars: Car[] = [
     drivetrain: '9-speed auto · 4x4 (Active Drive)',
     zeroToHundred: '~10.0 s',
     topSpeed: '~194 km/h',
-    story: '2.0 diesel, full 4x4 — trail-rated luxury that could actually go off-road.',
+    story: '2.0 diesel, full 4x4, trail-rated luxury that could actually go off-road.',
     fact: 'The flagship Model S diesel is the only way to pair the top trim with real all-wheel-drive Selec-Terrain.',
     image: '/cars/2022-jeep-compass-model-s.jpg',
   },
@@ -176,7 +176,7 @@ export const cars: Car[] = [
     drivetrain: '7-speed S tronic · FWD',
     zeroToHundred: '7.1 s',
     topSpeed: '241 km/h',
-    story: 'Navarra Blue and Bang & Olufsen — understated, fast, refined.',
+    story: 'Navarra Blue and Bang & Olufsen, understated, fast, refined.',
     fact: 'The Technology trim tops the range with a 19-speaker, 755W B&O 3D sound system.',
     image: '/cars/2024-audi-a4.jpg',
     video: '/cars/2024-audi-a4.mp4',
@@ -202,7 +202,7 @@ export const cars: Car[] = [
     zeroToHundred: '6.8 s',
     topSpeed: '202 km/h',
     range: '656 km (MIDC)',
-    story: 'Born-electric coupe-SUV — 656 km of range and 6.8s to 100.',
+    story: 'Born-electric coupe-SUV. 656 km of range and 6.8s to 100.',
     fact: 'Built on Mahindra’s INGLO platform with a triple-screen dashboard spanning the full cabin width.',
     image: '/cars/2025-mahindra-xev-9e.jpg',
     video: '/cars/2025-mahindra-xev-9e.mp4',
@@ -227,14 +227,14 @@ export const cars: Car[] = [
     drivetrain: '9G-Tronic · RWD',
     zeroToHundred: '~6.0 s',
     topSpeed: '250 km/h',
-    story: 'The newest arrival — 258 hp, AMG Line, Obsidian Black. The current daily flex.',
+    story: 'The newest arrival. 258 hp, AMG Line, Obsidian Black. The current daily flex.',
     fact: 'Every W206 C-Class is electrified: a 48V starter-generator adds EQ Boost torque-fill and engine-off coasting.',
     image: '/cars/2026-mercedes-c300.jpg',
     video: '/cars/2026-mercedes-c300.mp4',
   },
 ]
 
-// Newest first — the current flex leads, the origin story closes the garage.
+// Newest first, the current flex leads, the origin story closes the garage.
 cars.sort((a, b) => b.year - a.year)
 cars.forEach((c, i) => (c.order = i + 1))
 

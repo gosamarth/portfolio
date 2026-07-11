@@ -31,6 +31,24 @@ body {
   border-radius: 999px;
 }
 
+/* One journey page = one visible viewport. iOS Safari's collapsing toolbar
+   makes 100vh taller than the visible screen; dvh tracks the real height,
+   which is what fixes "can't scroll to the bottom" on iPhones. */
+.h-page {
+  height: 100vh;
+}
+.journey-spacer {
+  height: calc(var(--journey-pages) * 100vh);
+}
+@supports (height: 100dvh) {
+  .h-page {
+    height: 100dvh;
+  }
+  .journey-spacer {
+    height: calc(var(--journey-pages) * 100dvh);
+  }
+}
+
 @layer components {
   .glass {
     background: rgba(11, 14, 23, 0.55);

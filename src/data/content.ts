@@ -8,7 +8,7 @@ export const profile = {
   role: 'Director of Engineering',
   // Short one-liner under the name on the hero.
   tagline:
-    'Engineering leader by day, gearhead always. I build platforms that scale — and collect the machines that move me.',
+    'Engineering leader by day, gearhead always. I build platforms that scale, and collect the machines that move me.',
   location: 'Delhi, India',
   email: 'samarthbuilds@gmail.com',
   socials: [
@@ -17,12 +17,12 @@ export const profile = {
   ],
 }
 
-// The "About" section — skillset-forward, no company named.
+// The "About" section, skillset-forward, no company named.
 export const about = {
   heading: 'About',
   body: [
-    'I’m a Director of Engineering and have been part of senior leadership for the last 4 years — owning architecture, platform, and the teams that ship it.',
-    'My home turf is the Microsoft stack, top to bottom: full .NET, Angular, and Azure at scale. On top of that I go deep on AI — LLMs, agents, and RAG woven into real products.',
+    'I’m a Director of Engineering and have been part of senior leadership for the last 4 years, owning architecture, platform, and the teams that ship it.',
+    'My home turf is the Microsoft stack, top to bottom: full .NET, Angular, and Azure at scale. On top of that I go deep on AI. LLMs, agents, and RAG woven into real products.',
     'This site is a bit of both sides of me: an over-engineered, scroll-driven 3D playground, with my garage rendered like a car-select screen.',
   ],
 }
@@ -38,14 +38,14 @@ export const projects: Project[] = [
   {
     title: 'This Portfolio',
     blurb:
-      'A scroll-driven WebGL experience — react-three-fiber, custom shaders, an NFS-style 3D garage. Proof over claims.',
+      'A scroll-driven WebGL experience, react-three-fiber, custom shaders, an NFS-style 3D garage. Proof over claims.',
     tags: ['React', 'Three.js', 'TypeScript', 'WebGL'],
     href: '#',
   },
   {
     title: 'IMNoting',
     blurb:
-      'Anonymous social-perception platform — .NET 9 API, EF Core, Azure SQL + Blob, Razorpay, Angular front-end.',
+      'Anonymous social-perception platform, .NET 9 API, EF Core, Azure SQL + Blob, Razorpay, Angular front-end.',
     tags: ['.NET 9', 'Azure', 'Angular', 'SQL Server'],
     href: '#',
   },

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { CAREER_EPOCH } from '../data/tech'
 
 // ─────────────────────────────────────────────────────────────
-//  A decade, live. Counts every second of the career — proof
+//  A decade, live. Counts every second of the career, proof
 //  that the clock never stopped.
 // ─────────────────────────────────────────────────────────────
 
@@ -49,7 +49,7 @@ export function ExperienceTicker({ suffix }: { suffix?: string[] }) {
       </span>
       <span className="text-sm tabular-nums text-black/35">{d.clock}</span>
       <span className="w-full text-[11px] uppercase tracking-[0.3em] text-black/40 md:w-auto">
-        {(suffix ?? ['of building — and counting']).join(' ')}
+        {(suffix ?? ['of building, and counting']).join(' ')}
       </span>
     </div>
   )

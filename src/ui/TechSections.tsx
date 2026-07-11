@@ -1,7 +1,8 @@
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 import { profile } from '../data/content'
 import {
-  techHero, storyMoment, storyArrival, chapters, journey, receipts, console_,
+  techHero, storyMoment, storyArrival, chapters, helpGrid, journey, receipts, console_,
   offerings, reach, irl, techContact,
 } from '../data/tech'
 import { ExperienceTicker } from './ExperienceTicker'
@@ -47,12 +48,46 @@ function Poem({
   )
 }
 
+/** Numbers that earn their entrance: count up from zero when scrolled into view.
+ *  Handles values like "35%", "8×", "$10M+", "99.95%"; anything else just pops. */
+function CountUp({ value, className = '', style }: { value: string; className?: string; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref, { amount: 0.6, once: true })
+  const [shown, setShown] = useState(value)
+  const m = value.match(/^([^0-9]*)(\d+(?:\.\d+)?)(.*)$/)
+
+  useEffect(() => {
+    if (!m || !inView) return
+    const [, prefix, numStr, suffix] = m
+    const target = parseFloat(numStr)
+    const decimals = numStr.includes('.') ? numStr.split('.')[1].length : 0
+    const dur = 1100
+    const t0 = performance.now()
+    let raf = 0
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / dur)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setShown(`${prefix}${(target * eased).toFixed(decimals)}${suffix}`)
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView])
+
+  return (
+    <span ref={ref} className={className} style={style}>
+      {m ? (inView ? shown : `${m[1]}0${m[3]}`) : value}
+    </span>
+  )
+}
+
 /** HTML overlay for the porcelain Command Deck. Order matches src/data/tech.ts. */
 export function TechSections() {
   return (
     <div className="w-screen" style={{ color: INK }}>
-      {/* 0 — HERO */}
-      <section className="flex h-screen overflow-hidden flex-col justify-center px-6 md:px-16">
+      {/* 0. HERO */}
+      <section className="flex h-page overflow-hidden flex-col justify-center px-6 md:px-16">
         <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-5 !text-black/50">
           {techHero.subtitle}
         </motion.p>
@@ -74,8 +109,8 @@ export function TechSections() {
         </motion.div>
       </section>
 
-      {/* 1 — THE MOMENT */}
-      <section className="flex h-screen overflow-hidden flex-col justify-center px-6 md:px-16">
+      {/* 1. THE MOMENT */}
+      <section className="flex h-page overflow-hidden flex-col justify-center px-6 md:px-16">
         <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-6 !text-black/45">
           {storyMoment.eyebrow}
         </motion.p>
@@ -94,8 +129,8 @@ export function TechSections() {
         />
       </section>
 
-      {/* 2 — THE ARRIVAL */}
-      <section className="flex h-screen overflow-hidden flex-col justify-center px-6 md:px-16">
+      {/* 2. THE ARRIVAL */}
+      <section className="flex h-page overflow-hidden flex-col justify-center px-6 md:px-16">
         <Poem
           lines={storyArrival.lines}
           className="max-w-4xl"
@@ -112,9 +147,9 @@ export function TechSections() {
         </motion.p>
       </section>
 
-      {/* 3–7 — CHAPTERS: poem left, receipts of change right */}
+      {/* 3–7. CHAPTERS: poem left, receipts of change right */}
       {chapters.map((c) => (
-        <section key={c.key} className="flex h-screen overflow-hidden items-center px-6 md:px-16">
+        <section key={c.key} className="flex h-page overflow-hidden items-center px-6 md:px-16">
           <div className="grid w-full max-w-6xl items-center gap-8 md:grid-cols-[1.25fr,1fr] md:gap-14">
             <div>
               <div className="flex items-baseline gap-4">
@@ -154,8 +189,60 @@ export function TechSections() {
         </section>
       ))}
 
-      {/* 8 — THE CLIMB */}
-      <section className="flex h-screen overflow-hidden items-center px-6 md:px-16">
+      {/* 8. WHERE I PLUG IN */}
+      <section className="flex h-page overflow-hidden items-center px-6 md:px-16">
+        <div className="w-full max-w-6xl">
+          <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-2 !text-rose-800/70">
+            {helpGrid.eyebrow}
+          </motion.p>
+          <motion.h2 {...fade} transition={{ duration: 0.55, delay: 0.05 }} className="font-display text-3xl font-bold tracking-tight md:text-5xl">
+            {helpGrid.title}
+          </motion.h2>
+          <motion.p {...fade} transition={{ duration: 0.55, delay: 0.1 }} className="mt-2 max-w-2xl text-sm text-black/50 md:text-lg">
+            {helpGrid.line}
+          </motion.p>
+          {/* mobile: swipeable lane deck · desktop: 3×2 wall */}
+          <div className="pointer-events-auto -mx-6 mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-3 md:pointer-events-none md:mx-0 md:mt-8 md:grid md:snap-none md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 md:pb-0">
+            {helpGrid.items.map((h, i) => (
+              <motion.div
+                key={h.title}
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ amount: 0.1 }}
+                transition={{ duration: 0.45, delay: i * 0.07 }}
+                className="glass-light group w-[16.5rem] shrink-0 snap-center rounded-2xl p-4 transition duration-300 hover:-translate-y-1 md:pointer-events-auto md:w-auto md:shrink md:p-5"
+                style={{ borderTop: `2px solid ${h.accent}55` }}
+              >
+                <div className="flex items-baseline justify-between">
+                  <h3 className="font-display text-base font-bold md:text-lg">{h.title}</h3>
+                  <span className="font-mono text-xs font-bold" style={{ color: `${h.accent}70` }}>{h.icon}</span>
+                </div>
+                <p className="mt-1 text-[11px] font-semibold uppercase tracking-wide" style={{ color: h.accent }}>
+                  {h.who}
+                </p>
+                <p className="mt-1.5 text-[13px] leading-snug text-black/60">{h.desc}</p>
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  {h.chips.map((c) => (
+                    <span
+                      key={c}
+                      className="rounded-full border px-2 py-0.5 font-mono text-[10px] text-black/60"
+                      style={{ borderColor: `${h.accent}40` }}
+                    >
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-black/30 md:hidden">
+            swipe for more lanes →
+          </p>
+        </div>
+      </section>
+
+      {/* 9. THE CLIMB */}
+      <section className="flex h-page overflow-hidden items-center px-6 md:px-16">
         <div className="w-full max-w-5xl">
           <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-2 !text-amber-700/80">
             {journey.eyebrow}
@@ -199,8 +286,8 @@ export function TechSections() {
         </div>
       </section>
 
-      {/* 9 — RECEIPTS */}
-      <section className="flex h-screen overflow-hidden items-center px-6 md:px-16">
+      {/* 9. RECEIPTS */}
+      <section className="flex h-page overflow-hidden items-center px-6 md:px-16">
         <div className="w-full max-w-5xl">
           <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-2 !text-sky-700/80">
             {receipts.eyebrow}
@@ -218,7 +305,7 @@ export function TechSections() {
                 transition={{ duration: 0.5, delay: i * 0.12 }}
                 className="glass-light flex flex-col rounded-2xl p-5 md:p-6"
               >
-                <div className="font-display text-4xl font-bold text-sky-700 md:text-5xl">{r.metric}</div>
+                <CountUp value={r.metric} className="font-display text-4xl font-bold text-sky-700 md:text-5xl" />
                 <div className="mt-2 font-display text-sm font-semibold uppercase tracking-wide">{r.headline}</div>
                 <div className="mt-3 flex-1 space-y-1.5">
                   {r.lines.map((ln) => (
@@ -236,8 +323,8 @@ export function TechSections() {
         </div>
       </section>
 
-      {/* 10 — DIRECTOR'S CONSOLE */}
-      <section className="flex h-screen overflow-hidden items-center px-6 md:px-16">
+      {/* 10. DIRECTOR'S CONSOLE */}
+      <section className="flex h-page overflow-hidden items-center px-6 md:px-16">
         <div className="grid w-full max-w-6xl items-center gap-8 md:grid-cols-[1fr,1.3fr] md:gap-14">
           <div>
             <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-2 !text-amber-700/80">
@@ -267,7 +354,7 @@ export function TechSections() {
                   transition={{ duration: 0.45, delay: 0.4 + i * 0.07 }}
                   className="glass-light rounded-xl p-4"
                 >
-                  <div className="font-display text-2xl font-bold text-amber-700 md:text-3xl">{m.value}</div>
+                  <CountUp value={m.value} className="font-display text-2xl font-bold text-amber-700 md:text-3xl" />
                   <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-black/70">{m.label}</div>
                   <div className="mt-1 text-[11px] text-black/45">{m.note}</div>
                 </motion.div>
@@ -277,8 +364,8 @@ export function TechSections() {
         </div>
       </section>
 
-      {/* 11 — WORK WITH ME */}
-      <section className="flex h-screen overflow-hidden items-center px-6 md:px-16">
+      {/* 11. WORK WITH ME */}
+      <section className="flex h-page overflow-hidden items-center px-6 md:px-16">
         <div className="w-full max-w-6xl">
           <div className="md:flex md:items-end md:justify-between md:gap-10">
             <div>
@@ -330,8 +417,8 @@ export function TechSections() {
         </div>
       </section>
 
-      {/* 12 — OFF DUTY */}
-      <section className="flex h-screen overflow-hidden items-center px-6 md:px-16">
+      {/* 12. OFF DUTY */}
+      <section className="flex h-page overflow-hidden items-center px-6 md:px-16">
         <div className="w-full max-w-5xl">
           <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-2 !text-black/45">
             {irl.eyebrow}
@@ -352,7 +439,7 @@ export function TechSections() {
               lineClass="text-base font-medium text-black/65 md:text-xl md:leading-snug"
             />
           </div>
-          {/* mobile polaroid strip — the 3D wall lives off-frustum on phones */}
+          {/* mobile polaroid strip, the 3D wall lives off-frustum on phones */}
           <motion.div
             {...fade}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -372,8 +459,8 @@ export function TechSections() {
         </div>
       </section>
 
-      {/* 13 — OPEN CHANNEL */}
-      <section className="flex h-screen overflow-hidden flex-col justify-center px-6 md:px-16">
+      {/* 13. OPEN CHANNEL */}
+      <section className="flex h-page overflow-hidden flex-col justify-center px-6 md:px-16">
         <motion.p {...fade} transition={{ duration: 0.5 }} className="eyebrow mb-4 !text-black/45">
           {techContact.eyebrow}
         </motion.p>
