@@ -7,14 +7,19 @@
 export const TRIALS_CLEARED_KEY = 'trials.cleared.v1'
 export const TRIALS_PLAYER_KEY = 'trials.player.v1'
 export const MAGIC_WORD = 'samakadabra'
+// The champion's cheat — earned on victory, whispered on return visits.
+export const CHEAT_CODE = 'knockknock'
 
 export type Player = { name: string; email: string; phone: string }
 
 export type TrialStats = {
+  path?: 'engineer' | 'detective' | 'founder'
   taps?: number
   tapsPerSec?: number
   wpm?: number
   foundWord?: boolean
+  clueMisses?: number
+  building?: string
   reactionMs?: number
   totalSec?: number
   skips?: number
@@ -54,7 +59,7 @@ export function loadPlayer(): Player | null {
 }
 
 /** Fire-and-forget lead post — the SWA function writes it to Table Storage. */
-export function submitLead(player: Player, stage: 'register' | 'victory', stats?: TrialStats) {
+export function submitLead(player: Player, stage: 'register' | 'victory' | 'founder-pass' | 'cheat-return', stats?: TrialStats) {
   try {
     void fetch('/api/lead', {
       method: 'POST',
@@ -69,11 +74,12 @@ export function submitLead(player: Player, stage: 'register' | 'victory', stats?
 
 /** Rank title from the final scorecard — the shareable flex. */
 export function rankTitle(s: TrialStats): string {
-  const r = s.reactionMs ?? 9999
+  if (s.path === 'founder') return 'Corner Office'
   if (s.skips && s.skips > 1) return 'Diplomatic Immunity'
+  const r = s.reactionMs ?? 9999
   if (r < 240) return 'Lights-Out Legend'
   if (r < 320) return 'Podium Material'
-  if (r < 480) return 'Track-Day Ready'
+  if (r < 480) return s.path === 'detective' ? 'Master Sleuth' : 'Track-Day Ready'
   return 'Sunday Driver'
 }
 

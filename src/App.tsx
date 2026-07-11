@@ -13,14 +13,24 @@ import { JOURNEY_HTML_ID, handleJourneyScroll, setJourneyPages, scrollState } fr
 import { RevCounter } from './ui/RevCounter'
 import { IgnitionLoader } from './ui/IgnitionLoader'
 import { TrialsGate } from './trials/TrialsGate'
-import { trialsCleared } from './trials/trials'
+import { CheatSplash } from './trials/CheatSplash'
+import { CHEAT_CODE, loadPlayer, markTrialsCleared, submitLead, trialsCleared } from './trials/trials'
 import type { WorldMode } from './world'
 
 export default function App() {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const [mode, setMode] = useState<WorldMode>('select')
   const [trialsOpen, setTrialsOpen] = useState(false)
+  const [cheating, setCheating] = useState(false)
   const inWorld = mode !== 'select'
+
+  const triggerCheat = () => {
+    setTrialsOpen(false)
+    setCheating(true)
+    markTrialsCleared()
+    const p = loadPlayer()
+    if (p) submitLead(p, 'cheat-return')
+  }
 
   // The portfolio is guarded — THE TRIALS open unless already cleared.
   const requestMode = (m: WorldMode) => {
@@ -55,7 +65,7 @@ export default function App() {
   // world-select keyboard shortcuts (dormant while THE TRIALS are running)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (trialsOpen) return
+      if (trialsOpen || cheating) return
       if (mode !== 'select') {
         if (e.key === 'Escape') setMode('select')
         return
@@ -65,7 +75,26 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [mode, trialsOpen])
+  }, [mode, trialsOpen, cheating])
+
+  // the champion's cheat — type "knockknock" anywhere, no input box needed
+  useEffect(() => {
+    let buffer = ''
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return
+      if (cheating || mode === 'tech') return
+      if (e.key.length === 1 && /[a-z]/i.test(e.key)) {
+        buffer = (buffer + e.key.toLowerCase()).slice(-CHEAT_CODE.length)
+        if (buffer === CHEAT_CODE) {
+          buffer = ''
+          triggerCheat()
+        }
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [mode, cheating])
 
   return (
     <div className="fixed inset-0">
@@ -129,7 +158,18 @@ export default function App() {
             setTrialsOpen(false)
             setMode('tech')
           }}
+          onCheat={triggerCheat}
           onClose={() => setTrialsOpen(false)}
+        />
+      )}
+
+      {/* KNOCKKNOCK — champion re-entry splash */}
+      {cheating && (
+        <CheatSplash
+          onDone={() => {
+            setCheating(false)
+            setMode('tech')
+          }}
         />
       )}
 

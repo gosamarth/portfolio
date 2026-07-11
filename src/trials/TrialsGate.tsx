@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  MAGIC_WORD, type Player, type TrialStats, isMuted, loadPlayer, markTrialsCleared,
-  rankTitle, savePlayer, setMuted, sfxFail, sfxGo, sfxLight, sfxPass, sfxTap,
-  sfxVictory, submitLead,
+  CHEAT_CODE, MAGIC_WORD, type Player, type TrialStats, isMuted, loadPlayer,
+  markTrialsCleared, rankTitle, savePlayer, setMuted, sfxFail, sfxGo, sfxLight,
+  sfxPass, sfxTap, sfxVictory, submitLead,
 } from './trials'
 
 // ─────────────────────────────────────────────────────────────
@@ -11,10 +11,37 @@ import {
 //  portfolio. Full-screen, neon-on-carbon, 2026 pro-gamer.
 // ─────────────────────────────────────────────────────────────
 
-type Stage = 'intro' | 'register' | 'overdrive' | 'typing' | 'inspect' | 'reaction' | 'victory'
+type Stage =
+  | 'intro' | 'register' | 'path'
+  | 'overdrive' | 'typing' | 'inspect'
+  | 'detective' | 'founder'
+  | 'reaction' | 'victory'
 
-const STAGE_ORDER: Stage[] = ['intro', 'register', 'overdrive', 'typing', 'inspect', 'reaction', 'victory']
-const TRIAL_LABELS = ['REG', 'OVR', 'WPM', 'DOM', 'RXN']
+type Path = 'engineer' | 'detective' | 'founder'
+
+// per-path progress chips
+const CHIPS: Record<Path | 'none', { label: string; at: Stage[] }[]> = {
+  none: [
+    { label: 'REG', at: ['register'] },
+    { label: '???', at: ['path'] },
+  ],
+  engineer: [
+    { label: 'REG', at: ['register'] },
+    { label: 'OVR', at: ['overdrive'] },
+    { label: 'WPM', at: ['typing'] },
+    { label: 'DOM', at: ['inspect'] },
+    { label: 'RXN', at: ['reaction'] },
+  ],
+  detective: [
+    { label: 'REG', at: ['register'] },
+    { label: 'CLU', at: ['detective'] },
+    { label: 'RXN', at: ['reaction'] },
+  ],
+  founder: [
+    { label: 'REG', at: ['register'] },
+    { label: 'PASS', at: ['founder'] },
+  ],
+}
 
 const isTouch = () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
 
@@ -30,24 +57,28 @@ function Brackets() {
   )
 }
 
-function StageHeader({ stage, skips }: { stage: Stage; skips: number }) {
-  const idx = STAGE_ORDER.indexOf(stage) - 1 // register = 0
+function StageHeader({ stage, path, skips }: { stage: Stage; path: Path | null; skips: number }) {
+  const chips = CHIPS[path ?? 'none']
+  const activeIdx = chips.findIndex((c) => c.at.includes(stage))
+  const doneAll = stage === 'victory'
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col items-center gap-2 px-4 py-4 md:flex-row md:justify-between md:px-10 md:py-5">
       <span className="font-mono text-[11px] uppercase tracking-[0.35em] text-accent">
         The Trials <span className="hidden text-white/35 md:inline">// gosamarth.com</span>
       </span>
       <div className="flex items-center gap-2">
-        {TRIAL_LABELS.map((l, i) => (
+        {chips.map((c, i) => (
           <span
-            key={l}
+            key={c.label}
             className={`rounded border px-2 py-0.5 font-mono text-[10px] tracking-[0.2em] transition-colors duration-500 ${
-              i < idx ? 'border-emerald-400/70 text-emerald-300'
-              : i === idx ? 'border-accent text-accent shadow-[0_0_12px_rgba(110,231,255,0.45)]'
-              : 'border-white/15 text-white/30'
+              doneAll || (activeIdx >= 0 && i < activeIdx)
+                ? 'border-emerald-400/70 text-emerald-300'
+                : i === activeIdx
+                  ? 'border-accent text-accent shadow-[0_0_12px_rgba(110,231,255,0.45)]'
+                  : 'border-white/15 text-white/30'
             }`}
           >
-            {l}
+            {c.label}
           </span>
         ))}
         {skips > 0 && (
@@ -113,6 +144,69 @@ function FailBar({ onRetry, onSkip, showSkip, note }: { onRetry: () => void; onS
   )
 }
 
+// 0 ── INTRO (with the champion's whisper) -----------------------------------
+function IntroStep({ onAccept, onCheat }: { onAccept: () => void; onCheat: () => void }) {
+  const [whisper, setWhisper] = useState(false)
+  const [code, setCode] = useState('')
+  const [shake, setShake] = useState(0)
+
+  const tryCode = () => {
+    if (code.trim().toLowerCase() === CHEAT_CODE) {
+      onCheat()
+    } else {
+      sfxFail()
+      setShake((s) => s + 1)
+      setCode('')
+    }
+  }
+
+  return (
+    <motion.div {...stepAnim} className="flex flex-col items-center px-6 text-center">
+      <p className="font-mono text-[11px] uppercase tracking-[0.5em] text-accent">Restricted sector</p>
+      <h1 className="mt-4 font-display text-6xl font-bold uppercase leading-[0.95] tracking-tight md:text-8xl">
+        The<br />Trials
+      </h1>
+      <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-white/55 md:text-base">
+        The portfolio doesn't open for tourists. The trials stand between you and the story —
+        pick your path: engineer, detective, or founder. Solve it and the word is yours.
+      </p>
+      <NeonButton className="mt-8" onClick={onAccept}>
+        I accept →
+      </NeonButton>
+      {!whisper ? (
+        <button
+          onClick={() => setWhisper(true)}
+          className="mt-5 font-mono text-[10px] uppercase tracking-[0.35em] text-white/25 transition hover:text-white/60"
+        >
+          🗝 I know the code
+        </button>
+      ) : (
+        <motion.div
+          key={shake}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0, x: shake ? [0, -10, 10, -6, 6, 0] : 0 }}
+          className="mt-5 flex items-center gap-2"
+        >
+          <input
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && tryCode()}
+            autoFocus
+            className="w-52 rounded-full border border-white/20 bg-white/[0.04] px-5 py-2 text-center font-mono text-sm tracking-[0.25em] text-accent outline-none focus:border-accent"
+            placeholder="whisper it…"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+          />
+          <button onClick={tryCode} className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 transition hover:text-white">
+            knock
+          </button>
+        </motion.div>
+      )}
+    </motion.div>
+  )
+}
+
 // 1 ── REGISTER ------------------------------------------------------------
 function RegisterStep({ onDone }: { onDone: (p: Player) => void }) {
   const saved = loadPlayer()
@@ -154,6 +248,163 @@ function RegisterStep({ onDone }: { onDone: (p: Player) => void }) {
       <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-white/25">
         Contact goes to Samarth only. No spam — maybe one legendary email.
       </p>
+    </motion.div>
+  )
+}
+
+// 1.5 ── CHOOSE YOUR PATH ---------------------------------------------------
+function PathStep({ onPick }: { onPick: (p: Path) => void }) {
+  const paths: { key: Path; icon: string; title: string; blurb: string; tone: string }[] = [
+    {
+      key: 'engineer', icon: '⌨', title: 'The Engineer',
+      blurb: 'Four trials. Speed, typing, devtools, reflexes. Full glory.',
+      tone: 'hover:border-accent hover:shadow-[0_0_30px_rgba(110,231,255,0.25)]',
+    },
+    {
+      key: 'detective', icon: '◎', title: 'The Detective',
+      blurb: 'No code needed. Three clues about Samarth — every answer hides in these two worlds.',
+      tone: 'hover:border-emerald-400 hover:shadow-[0_0_30px_rgba(52,211,153,0.25)]',
+    },
+    {
+      key: 'founder', icon: '▲', title: 'The Founder Pass',
+      blurb: "Skip the games. You're here to build something — the door respects that.",
+      tone: 'hover:border-amber-400 hover:shadow-[0_0_30px_rgba(251,191,36,0.25)]',
+    },
+  ]
+  return (
+    <motion.div {...stepAnim} className="flex w-full max-w-4xl flex-col items-center px-6">
+      <TrialTitle index="Choose your path" title="Three Doors" sub="Every path ends inside. Pick the one that sounds like you." />
+      <div className="mt-8 grid w-full gap-3 md:grid-cols-3 md:gap-4">
+        {paths.map((p, i) => (
+          <motion.button
+            key={p.key}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 + i * 0.12, duration: 0.45 }}
+            onClick={() => { sfxTap(); onPick(p.key) }}
+            className={`group rounded-2xl border border-white/12 bg-white/[0.03] p-6 text-left transition-all duration-300 ${p.tone}`}
+          >
+            <span className="font-display text-3xl text-accent">{p.icon}</span>
+            <h3 className="mt-3 font-display text-xl font-bold uppercase tracking-wide text-white">{p.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-white/55">{p.blurb}</p>
+            <span className="mt-4 inline-block font-mono text-[10px] uppercase tracking-[0.3em] text-white/35 transition group-hover:text-white/70">
+              take this path →
+            </span>
+          </motion.button>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+// 3-alt ── THE DETECTIVE ------------------------------------------------------
+const CLUES = [
+  {
+    q: 'How many machines live in Samarth\'s garage?',
+    options: ['6', '7', '8', '9'],
+    answer: '8',
+    hint: 'The garage door on the home screen brags about it.',
+  },
+  {
+    q: 'Which machine parks at the very END of the garage — the origin story?',
+    options: ['2026 Mercedes C300 AMG', 'BMW 520d', '2011 VW Vento IPL', 'Mahindra XEV 9e'],
+    answer: '2011 VW Vento IPL',
+    hint: 'Newest first, oldest last. The garage intro says the origin story parks at the end.',
+  },
+  {
+    q: 'Where does Samarth build from?',
+    options: ['Bangalore', 'Mumbai', 'Delhi', 'Pune'],
+    answer: 'Delhi',
+    hint: 'It\'s written right under his name in the garage.',
+  },
+]
+
+function DetectiveStep({ onDone, onSkip, skippable }: { onDone: (s: TrialStats) => void; onSkip: () => void; skippable: boolean }) {
+  const [idx, setIdx] = useState(0)
+  const [misses, setMisses] = useState(0)
+  const [shake, setShake] = useState(0)
+  const [showHint, setShowHint] = useState(false)
+  const clue = CLUES[idx]
+
+  const pick = (opt: string) => {
+    if (opt === clue.answer) {
+      sfxPass()
+      setShowHint(false)
+      if (idx === CLUES.length - 1) onDone({ clueMisses: misses })
+      else setIdx(idx + 1)
+    } else {
+      sfxFail()
+      setMisses((m) => m + 1)
+      setShake((s) => s + 1)
+    }
+  }
+
+  return (
+    <motion.div {...stepAnim} className="flex w-full max-w-2xl flex-col items-center px-6">
+      <TrialTitle
+        index={`The Detective · Clue ${idx + 1}/${CLUES.length}`}
+        title="Read the Worlds"
+        sub="Every answer is on this website — the garage is unguarded, go look if you must. Esc retreats safely; your registration is remembered."
+      />
+      <motion.div
+        key={`${idx}-${shake}`}
+        animate={{ x: shake ? [0, -10, 10, -6, 6, 0] : 0 }}
+        transition={{ duration: 0.35 }}
+        className="mt-8 w-full"
+      >
+        <p className="text-center font-display text-xl font-semibold text-white md:text-2xl">{clue.q}</p>
+        <div className="mt-6 grid gap-3 md:grid-cols-2">
+          {clue.options.map((opt) => (
+            <button
+              key={opt}
+              onClick={() => pick(opt)}
+              className="rounded-xl border border-white/15 bg-white/[0.03] px-5 py-4 font-mono text-sm text-white/80 transition-all duration-200 hover:border-emerald-400 hover:bg-emerald-400/10 hover:text-white"
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+      {misses > 0 && !showHint && (
+        <button onClick={() => setShowHint(true)} className="mt-5 font-mono text-xs uppercase tracking-[0.3em] text-white/35 transition hover:text-white/70">
+          need a nudge?
+        </button>
+      )}
+      {showHint && <p className="mt-5 max-w-sm text-center font-mono text-xs leading-relaxed text-emerald-300/80">{clue.hint}</p>}
+      {skippable && misses >= 4 && (
+        <NeonButton tone="amber" className="mt-5" onClick={onSkip}>
+          Surrender this trial →
+        </NeonButton>
+      )}
+    </motion.div>
+  )
+}
+
+// 3-alt ── THE FOUNDER PASS ----------------------------------------------------
+function FounderStep({ player, onDone }: { player: Player; onDone: (s: TrialStats) => void }) {
+  const [building, setBuilding] = useState('')
+  const go = () => {
+    sfxPass()
+    submitLead(player, 'founder-pass', { path: 'founder', building: building.trim().slice(0, 400) })
+    onDone({ path: 'founder', building: building.trim().slice(0, 400) })
+  }
+  return (
+    <motion.div {...stepAnim} className="flex w-full max-w-lg flex-col items-center px-6">
+      <TrialTitle
+        index="The Founder Pass"
+        title="No Games"
+        sub="Respect. One optional question, then the door opens — Samarth reads every answer personally."
+      />
+      <textarea
+        value={building}
+        onChange={(e) => setBuilding(e.target.value)}
+        rows={3}
+        placeholder="What are you building? (optional — but it gets you a sharper first call)"
+        className="mt-8 w-full resize-none rounded-xl border border-white/15 bg-white/[0.04] px-5 py-4 font-mono text-sm text-white placeholder-white/25 outline-none transition focus:border-amber-400"
+      />
+      <NeonButton tone="amber" className="mt-6" onClick={go}>
+        Open the door →
+      </NeonButton>
     </motion.div>
   )
 }
@@ -622,10 +873,12 @@ function VictoryStep({ player, stats, onEnter }: { player: Player; stats: TrialS
   useEffect(() => {
     sfxVictory()
     markTrialsCleared()
-    submitLead(player, 'victory', stats)
+    // the founder pass already reported itself from its own step
+    if (stats.path !== 'founder') submitLead(player, 'victory', stats)
   }, [player, stats])
 
   const title = rankTitle(stats)
+  const founder = stats.path === 'founder'
   const shareText = `I cleared THE TRIALS on Samarth's portfolio — rank: ${title}${
     stats.reactionMs ? `, reaction ${stats.reactionMs}ms` : ''
   }${stats.wpm ? `, ${stats.wpm} WPM` : ''}. Think you're faster?`
@@ -677,24 +930,56 @@ function VictoryStep({ player, stats, onEnter }: { player: Player; stats: TrialS
         {player.name}, the gate is open. Official rank:{' '}
         <span className="font-semibold text-accent">{title}</span>
       </p>
-      <div className="mt-7 grid w-full max-w-md grid-cols-3 gap-3">
-        <Stat label="Taps /s" value={stats.tapsPerSec ? `${stats.tapsPerSec}` : '—'} />
-        <Stat label="WPM" value={stats.wpm ? `${stats.wpm}` : '—'} />
-        <Stat label="Reaction" value={stats.reactionMs ? `${stats.reactionMs}ms` : '—'} />
-      </div>
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+      {!founder && (
+        <div className="mt-7 grid w-full max-w-md grid-cols-3 gap-3">
+          <Stat label="Taps /s" value={stats.tapsPerSec ? `${stats.tapsPerSec}` : '—'} />
+          <Stat label="WPM" value={stats.wpm ? `${stats.wpm}` : '—'} />
+          <Stat label="Reaction" value={stats.reactionMs ? `${stats.reactionMs}ms` : '—'} />
+        </div>
+      )}
+      {/* the champion's cheat — revealed only to those who made it through */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.1, duration: 0.6 }}
+        className="mt-7 w-full max-w-md rounded-2xl border border-glow/30 bg-glow/[0.05] px-6 py-4"
+      >
+        <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-glow">Cheat code unlocked</p>
+        <p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-white">{CHEAT_CODE}</p>
+        <p className="mt-2 text-xs leading-relaxed text-white/50">
+          Next visit, skip everything: just <span className="text-white/80">type it anywhere</span> on
+          the site — no box, no menu, like a proper cheat code. On a phone, tap{' '}
+          <span className="text-white/80">"🗝 I know the code"</span> at the gate and whisper it.
+        </p>
+      </motion.div>
+      <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
         <NeonButton onClick={onEnter}>Enter the portfolio →</NeonButton>
-        <NeonButton tone="ghost" onClick={share}>
-          {copied ? 'Copied — go brag' : 'Challenge a friend'}
-        </NeonButton>
+        {!founder && (
+          <NeonButton tone="ghost" onClick={share}>
+            {copied ? 'Copied — go brag' : 'Challenge a friend'}
+          </NeonButton>
+        )}
       </div>
     </motion.div>
   )
 }
 
 // ── THE GATE ──────────────────────────────────────────────────────────────
-export function TrialsGate({ onVictory, onClose }: { onVictory: () => void; onClose: () => void }) {
+const NEXT: Record<Exclude<Stage, 'victory'>, Stage> = {
+  intro: 'register',
+  register: 'path',
+  path: 'overdrive', // overridden by path pick
+  overdrive: 'typing',
+  typing: 'inspect',
+  inspect: 'reaction',
+  detective: 'reaction',
+  founder: 'victory',
+  reaction: 'victory',
+}
+
+export function TrialsGate({ onVictory, onCheat, onClose }: { onVictory: () => void; onCheat: () => void; onClose: () => void }) {
   const [stage, setStage] = useState<Stage>('intro')
+  const [path, setPath] = useState<Path | null>(null)
   const [player, setPlayer] = useState<Player | null>(null)
   const [stats, setStats] = useState<TrialStats>({})
   const [muted, setMutedState] = useState(isMuted())
@@ -706,17 +991,23 @@ export function TrialsGate({ onVictory, onClose }: { onVictory: () => void; onCl
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  const advance = (from: Stage, extra?: TrialStats, skipped = false) => {
+  const advance = (from: Exclude<Stage, 'victory'>, extra?: TrialStats, skipped = false) => {
     const merged = {
       ...stats,
       ...(extra ?? {}),
       ...(skipped ? { skips: (stats.skips ?? 0) + 1 } : {}),
     }
-    if (from === 'reaction') {
+    if (from === 'reaction' || from === 'founder') {
       merged.totalSec = Math.round((performance.now() - startRef.current) / 100) / 10
     }
     setStats(merged)
-    setStage(STAGE_ORDER[STAGE_ORDER.indexOf(from) + 1])
+    setStage(NEXT[from])
+  }
+
+  const pickPath = (p: Path) => {
+    setPath(p)
+    setStats((s) => ({ ...s, path: p }))
+    setStage(p === 'engineer' ? 'overdrive' : p)
   }
 
   return (
@@ -738,7 +1029,7 @@ export function TrialsGate({ onVictory, onClose }: { onVictory: () => void; onCl
         style={{ backgroundImage: 'repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 4px)' }}
       />
       <Brackets />
-      <StageHeader stage={stage} skips={stats.skips ?? 0} />
+      <StageHeader stage={stage} path={path} skips={stats.skips ?? 0} />
 
       {/* mute + exit */}
       <div className="absolute bottom-5 left-6 z-10 flex gap-4 font-mono text-[10px] uppercase tracking-[0.3em] text-white/30">
@@ -758,24 +1049,11 @@ export function TrialsGate({ onVictory, onClose }: { onVictory: () => void; onCl
 
       <div className="relative flex h-full items-center justify-center">
         <AnimatePresence mode="wait">
-          {stage === 'intro' && (
-            <motion.div key="intro" {...stepAnim} className="flex flex-col items-center px-6 text-center">
-              <p className="font-mono text-[11px] uppercase tracking-[0.5em] text-accent">Restricted sector</p>
-              <h1 className="mt-4 font-display text-6xl font-bold uppercase leading-[0.95] tracking-tight md:text-8xl">
-                The<br />Trials
-              </h1>
-              <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-white/55 md:text-base">
-                The portfolio doesn't open for tourists. Five trials stand between you and the
-                story — speed, fingers, devtools, reflexes. Solve them and the word is yours.
-              </p>
-              <NeonButton className="mt-8" onClick={() => { sfxTap(); setStage('register') }}>
-                I accept →
-              </NeonButton>
-            </motion.div>
-          )}
+          {stage === 'intro' && <IntroStep key="intro" onAccept={() => { sfxTap(); setStage('register') }} onCheat={onCheat} />}
           {stage === 'register' && (
             <RegisterStep key="reg" onDone={(p) => { setPlayer(p); advance('register') }} />
           )}
+          {stage === 'path' && <PathStep key="path" onPick={pickPath} />}
           {stage === 'overdrive' && (
             <OverdriveStep
               key="ovr"
@@ -799,6 +1077,17 @@ export function TrialsGate({ onVictory, onClose }: { onVictory: () => void; onCl
               onSkip={() => advance('inspect', {}, true)}
               skippable
             />
+          )}
+          {stage === 'detective' && (
+            <DetectiveStep
+              key="clu"
+              onDone={(s) => advance('detective', s)}
+              onSkip={() => advance('detective', {}, true)}
+              skippable
+            />
+          )}
+          {stage === 'founder' && player && (
+            <FounderStep key="pass" player={player} onDone={(s) => advance('founder', s)} />
           )}
           {stage === 'reaction' && (
             <ReactionStep
