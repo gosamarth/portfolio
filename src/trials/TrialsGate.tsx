@@ -968,8 +968,9 @@ function VictoryStep({ player, stats, onEnter }: { player: Player; stats: TrialS
         <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-glow">Cheat code unlocked</p>
         <p className="mt-2 font-mono text-2xl font-bold tracking-[0.3em] text-white">{CHEAT_CODE}</p>
         <p className="mt-2 text-xs leading-relaxed text-white/50">
-          Next visit, skip everything: just <span className="text-white/80">type it anywhere</span> on
-          the site, no box, no menu, like a proper cheat code. On a phone, tap{' '}
+          The gate stands every single time — except for champions. Type{' '}
+          <span className="text-white/80">knockknock anywhere on the site</span>, any page, any
+          visit, and the door opens just for you. On a phone, tap{' '}
           <span className="text-white/80">"🗝 I know the code"</span> at the gate and whisper it.
         </p>
       </motion.div>

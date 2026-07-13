@@ -17,6 +17,21 @@ import { Toaster, toast } from './ui/Toaster'
 import { TrialsGate } from './trials/TrialsGate'
 import { CheatSplash } from './trials/CheatSplash'
 import { CHEAT_CODE, loadPlayer, markTrialsCleared, submitLead, trialsCleared } from './trials/trials'
+import { Lobby } from './ui/Lobby'
+import { ArcadeMenu } from './arcade/ArcadeMenu'
+import { RevMatch } from './arcade/RevMatch'
+import { LightsGP } from './arcade/LightsGP'
+import { TunnelRunScene, TunnelRunHud } from './arcade/TunnelRun'
+import { SlabStackScene, SlabStackHud } from './arcade/SlabStack'
+import { DirectorRushScene, DirectorRushHud } from './arcade/DirectorRush'
+import { NeonDriftScene, NeonDriftHud } from './arcade/NeonDrift'
+import { TrafficWeaveScene, TrafficWeaveHud } from './arcade/TrafficWeave'
+import { RedlineDrag } from './arcade/RedlineDrag'
+import { SpotMachine } from './arcade/SpotMachine'
+import { BugSquash } from './arcade/BugSquash'
+import { RegexRanger } from './arcade/RegexRanger'
+import { DeployFriday } from './arcade/DeployFriday'
+import type { GameKey } from './arcade/arcade'
 import type { WorldMode } from './world'
 
 export default function App() {
@@ -24,7 +39,9 @@ export default function App() {
   const [mode, setMode] = useState<WorldMode>('select')
   const [trialsOpen, setTrialsOpen] = useState(false)
   const [cheating, setCheating] = useState(false)
-  const inWorld = mode !== 'select'
+  const [game, setGame] = useState<GameKey | null>(null)
+  // "inWorld" = a scroll-journey world; hub/arcade are their own screens
+  const inWorld = mode === 'garage' || mode === 'tech'
 
   const triggerCheat = () => {
     setTrialsOpen(false)
@@ -41,6 +58,7 @@ export default function App() {
       return
     }
     setTrialsOpen(false)
+    setGame(null)
     setMode(m)
   }
   const light = mode === 'tech'
@@ -69,15 +87,20 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       if (trialsOpen || cheating) return
       if (mode !== 'select') {
-        if (e.key === 'Escape') setMode('select')
+        if (e.key === 'Escape') {
+          if (mode === 'arcade' && game) setGame(null)
+          else setMode('select')
+        }
         return
       }
       if (e.key.toLowerCase() === 'g' || e.key === 'ArrowLeft') requestMode('garage')
       if (e.key.toLowerCase() === 't' || e.key === 'ArrowRight') requestMode('tech')
+      if (e.key.toLowerCase() === 'l') requestMode('hub')
+      if (e.key.toLowerCase() === 'a') requestMode('arcade')
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [mode, trialsOpen, cheating])
+  }, [mode, trialsOpen, cheating, game])
 
   // the site talks back: playful once-per-session toasts on milestones
   useEffect(() => {
@@ -99,6 +122,10 @@ export default function App() {
           toast('Serious scroller. The open channel waits on the last page.', { once: 'tech-mid', light: true })
       }, 900)
       return () => clearInterval(iv)
+    }
+    if (mode === 'arcade') {
+      toast('Free play. High scores are forever, quarters are not required.', { once: 'arcade-enter', delay: 2200 })
+      return
     }
     if (mode === 'select' && !trialsOpen) {
       const t = setTimeout(
@@ -136,6 +163,11 @@ export default function App() {
         <Suspense fallback={null}>
           {mode === 'garage' && <Experience />}
           {mode === 'tech' && <TechWorld />}
+          {mode === 'arcade' && game === 'tunnel' && <TunnelRunScene />}
+          {mode === 'arcade' && game === 'stack' && <SlabStackScene />}
+          {mode === 'arcade' && game === 'rush' && <DirectorRushScene />}
+          {mode === 'arcade' && game === 'drift' && <NeonDriftScene />}
+          {mode === 'arcade' && game === 'weave' && <TrafficWeaveScene />}
           <Preload all />
         </Suspense>
       </Canvas>
@@ -185,6 +217,24 @@ export default function App() {
 
       {/* World selection screen */}
       {mode === 'select' && <WorldSelect onSelect={requestMode} />}
+
+      {/* THE LOBBY — mission tiles */}
+      {mode === 'hub' && <Lobby onExit={() => setMode('select')} onGo={(m) => requestMode(m)} />}
+
+      {/* THE ARCADE */}
+      {mode === 'arcade' && !game && <ArcadeMenu onPlay={setGame} onExit={() => setMode('select')} />}
+      {mode === 'arcade' && game === 'rev' && <RevMatch onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'gp' && <LightsGP onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'tunnel' && <TunnelRunHud onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'stack' && <SlabStackHud onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'rush' && <DirectorRushHud onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'drift' && <NeonDriftHud onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'weave' && <TrafficWeaveHud onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'drag' && <RedlineDrag onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'spot' && <SpotMachine onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'squash' && <BugSquash onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'regex' && <RegexRanger onExit={() => setGame(null)} />}
+      {mode === 'arcade' && game === 'friday' && <DeployFriday onExit={() => setGame(null)} />}
 
       {/* THE TRIALS — the gauntlet guarding the portfolio */}
       {trialsOpen && (

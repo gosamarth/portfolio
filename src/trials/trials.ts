@@ -25,20 +25,16 @@ export type TrialStats = {
   skips?: number
 }
 
+// No persistence, no cache, no mercy: the gate stands EVERY time the
+// portfolio door is touched. The only key is the cheat code — typing
+// knockknock anywhere warps champions straight in. Player details stay
+// in localStorage so re-registering takes two seconds.
 export function trialsCleared(): boolean {
-  try {
-    return localStorage.getItem(TRIALS_CLEARED_KEY) === '1'
-  } catch {
-    return false
-  }
+  return false
 }
 
 export function markTrialsCleared() {
-  try {
-    localStorage.setItem(TRIALS_CLEARED_KEY, '1')
-  } catch {
-    /* private mode, the gate just asks again next time */
-  }
+  /* deliberately nothing — victory and the cheat enter directly */
 }
 
 export function savePlayer(p: Player) {
@@ -59,7 +55,11 @@ export function loadPlayer(): Player | null {
 }
 
 /** Fire-and-forget lead post, the SWA function writes it to Table Storage. */
-export function submitLead(player: Player, stage: 'register' | 'victory' | 'founder-pass' | 'cheat-return', stats?: TrialStats) {
+export function submitLead(
+  player: Player,
+  stage: 'register' | 'victory' | 'founder-pass' | 'cheat-return' | 'mission',
+  stats?: TrialStats,
+) {
   try {
     void fetch('/api/lead', {
       method: 'POST',

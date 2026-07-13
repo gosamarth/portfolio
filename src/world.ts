@@ -1,1 +1,1 @@
-export type WorldMode = 'select' | 'garage' | 'tech'
+export type WorldMode = 'select' | 'garage' | 'tech' | 'hub' | 'arcade'
